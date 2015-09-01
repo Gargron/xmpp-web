@@ -13,6 +13,7 @@ let App = React.createClass({
   mixins: [
     Reflux.listenTo(Actions.connection, "onConnection"),
     Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
+    Reflux.listenTo(Actions.loginFailed, "onLoginFailed"),
     Reflux.connect(ConversationsStore, "conversations"),
   ],
 
@@ -20,10 +21,14 @@ let App = React.createClass({
     let Connection = new Strophe.Connection('http://zeonfed.org:5280/http-bind');
 
     Connection.connect(this.props.jid, this.props.password, function (status) {
+      console.log('Connection status', status);
+
       if (status === Strophe.Status.CONNECTED) {
         Actions.connection();
       } else if (status === Strophe.Status.DISCONNECTED) {
         Actions.connectionLost();
+      } else if (status === Strophe.Status.AUTHFAIL) {
+        Actions.loginFailed();
       }
     });
 
@@ -56,6 +61,10 @@ let App = React.createClass({
     this.refs.sbConnectionLost.show();
   },
 
+  onLoginFailed () {
+    this.refs.sbLoginFailed.show();
+  },
+
   render () {
     return (
       <div className="wrapper">
@@ -64,6 +73,7 @@ let App = React.createClass({
 
         <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
         <Snackbar ref="sbConnectionLost" message="Connection lost" />
+        <Snackbar ref="sbLoginFailed" message="Login failed" action="Correct login details" onActionTouchTap={Actions.logout} />
       </div>
     );
   },

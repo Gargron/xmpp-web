@@ -11,16 +11,33 @@ let LoginForm = React.createClass({
     return {
       jid:      '',
       password: '',
+      error:    false,
     };
   },
 
-  handleClick (e) {
+  handleKeyUp (e) {
+    if (e.keyCode === 13) {
+      this._submit();
+    }
+  },
+
+  handleClick () {
+    this._submit();
+  },
+
+  _submit () {
+    if (this.state.jid.length === 0) {
+      this.setState({ error: 'A Jabber ID is required' });
+      return;
+    }
+
     Actions.login(this.state.jid, this.state.password);
   },
 
   handleJidChange (e) {
     this.setState({
-      jid: e.target.value,
+      jid:   e.target.value,
+      error: false,
     });
   },
 
@@ -32,9 +49,9 @@ let LoginForm = React.createClass({
 
   render () {
     return (
-      <div className="login-form">
+      <div className="login-form" onKeyUp={this.handleKeyUp}>
         <div className="input-group">
-          <TextField hintText="Jabber ID" value={this.state.jid} onChange={this.handleJidChange} />
+          <TextField hintText="Jabber ID" value={this.state.jid} onChange={this.handleJidChange} errorText={this.state.error} />
         </div>
 
         <div className="input-group">
