@@ -11,7 +11,10 @@ let LoginForm = require('./login_form');
 let App       = require('./app');
 
 let Main = React.createClass({
-  mixins: [Reflux.listenTo(Actions.login, "onLogin")],
+  mixins: [
+    Reflux.listenTo(Actions.login, "onLogin"),
+    Reflux.listenTo(Actions.logout, "onLogout"),
+  ],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
@@ -34,6 +37,14 @@ let Main = React.createClass({
       jid:      jid,
       password: password,
       loggedIn: true,
+    });
+  },
+
+  onLogout () {
+    this.setState({
+      jid:      '',
+      password: '',
+      loggedIn: false,
     });
   },
 

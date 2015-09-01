@@ -2,6 +2,7 @@ let React       = require('react');
 let mui         = require('material-ui');
 let Reflux      = require('reflux');
 let RosterStore = require('../stores/roster');
+let Actions     = require('../actions');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
@@ -18,7 +19,17 @@ let RosterRequestForm = require('./roster_request_form');
 let ConversationsList = React.createClass({
   mixins: [Reflux.connect(RosterStore, "roster")],
 
+  handleMenuClick (e, key, item) {
+    if (item.payload === 'logout') {
+      Actions.logout();
+    }
+  },
+
   render () {
+    let menu = [
+      { payload: 'logout', text: 'Logout' },
+    ];
+
     let roster = this.state.roster.roster.map(function (u) {
       return <RosterItem key={u.get('jid')} user={u} />;
     });
@@ -49,7 +60,7 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
 
           <ToolbarGroup key={1} float="right">
-            <DropDownIcon menuItems={[{payload: '1', text: 'Test'}]}>
+            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick}>
               <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>menu</FontIcon>
             </DropDownIcon>
           </ToolbarGroup>
