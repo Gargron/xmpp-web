@@ -73,9 +73,7 @@ let ConversationsStore = Reflux.createStore({
   },
 
   getInitialState () {
-    if (typeof this.opened === 'undefined') {
-      this.opened = false;
-    }
+    this.opened = false;
 
     if (typeof this.messages === 'undefined') {
       this.messages = Immutable.Map();
