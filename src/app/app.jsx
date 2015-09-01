@@ -18,29 +18,4 @@
   // For more details see: https://facebook.github.io/react/docs/top-level-api.html#react.render
   React.render(<Main />, document.body);
 
-  let Connection = new Strophe.Connection('http://zeonfed.org:5280/http-bind');
-
-  Connection.connect('dummy@zeonfed.org', 'apache12', function (status) {
-    if (status === Strophe.Status.CONNECTED) {
-      Actions.connection();
-    } else if (status === Strophe.Status.DISCONNECTED) {
-      Actions.connectionLost();
-    }
-  });
-
-  Connection.roster.registerCallback(function (items, item, previousItem) {
-    Actions.rosterChange(items);
-  });
-
-  Connection.roster.registerRequestCallback(function (jid) {
-    Actions.rosterRequestReceived(jid);
-  });
-
-  Connection.addHandler(function (message) {
-    Actions.messageReceived(message);
-    return true;
-  }, null, 'message', 'chat');
-
-  window.Connection = Connection;
-
 })();

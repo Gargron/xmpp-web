@@ -1,6 +1,8 @@
 let Reflux = require('reflux');
 
 let Actions = Reflux.createActions([
+  'login',
+
   'connection',
   'connectionLost',
 

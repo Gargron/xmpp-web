@@ -1,22 +1,17 @@
 let React              = require('react');
 let mui                = require('material-ui');
 let Reflux             = require('reflux');
-let ConversationsStore = require('../stores/conversations');
 let Actions            = require('../actions');
 
 let ThemeManager = new mui.Styles.ThemeManager();
 let Colors       = mui.Styles.Colors;
 let Snackbar     = mui.Snackbar;
 
-let ConversationView  = require('./conversation_view');
-let ConversationsList = require('./conversations_list');
+let LoginForm = require('./login_form');
+let App       = require('./app');
 
 let Main = React.createClass({
-  mixins: [
-    Reflux.listenTo(Actions.connection, "onConnection"),
-    Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
-    Reflux.connect(ConversationsStore, "conversations"),
-  ],
+  mixins: [Reflux.listenTo(Actions.login, "onLogin")],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
@@ -28,30 +23,32 @@ let Main = React.createClass({
     };
   },
 
-  componentWillMount() {
-    ThemeManager.setPalette({
-      accent1Color: Colors.deepOrange500,
+  getInitialState () {
+    return {
+      loggedIn: false,
+    };
+  },
+
+  onLogin (jid, password) {
+    this.setState({
+      jid:      jid,
+      password: password,
+      loggedIn: true,
     });
   },
 
-  onConnection () {
-    this.refs.sbConnectionEstablished.show();
-  },
-
-  onConnectionLost () {
-    this.refs.sbConnectionLost.show();
+  componentWillMount() {
+    ThemeManager.setPalette({
+      accent1Color: Colors.teal500,
+    });
   },
 
   render () {
-    return (
-      <div className="wrapper">
-        <ConversationView jid={this.state.conversations.opened} />
-        <ConversationsList />
-
-        <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
-        <Snackbar ref="sbConnectionLost" message="Connection lost" />
-      </div>
-    );
+    if (this.state.loggedIn) {
+      return <App jid={this.state.jid} password={this.state.password} />;
+    } else {
+      return <LoginForm />;
+    }
   },
 
 });

@@ -184,3 +184,15 @@ body {
 .message-form {
 
 }
+
+.login-form {
+  flex: 0 0 auto;
+  background: #fff;
+  border-radius: 3px;
+  box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
+  padding: 10px 24px;
+}
+
+.form-actions {
+  margin-top: 10px;
+}
