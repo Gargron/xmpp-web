@@ -41,6 +41,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.rosterStateChange, this.onRosterStateChange);
     this.listenTo(Actions.authorize, this.onAuthorize);
     this.listenTo(Actions.reject, this.onReject);
+    this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
   },
 
   onConnection () {
@@ -56,13 +57,12 @@ let RosterStore = Reflux.createStore({
   },
 
   onRosterRequestReceived (jid) {
-    if (typeof this.get(jid) === 'undefined') {
-      this.queue = this.queue.push(jid);
-      this._notify();
-    } else {
-      // Authorize the contact we earlier sent request to
-      Connection.roster.authorize(jid);
-    }
+    this.queue = this.queue.push(jid);
+    this._notify();
+  },
+
+  onSendRosterRequest (jid) {
+    Connection.roster.subscribe(jid);
   },
 
   onRosterStateChange (jid, newState) {
@@ -104,7 +104,7 @@ let RosterStore = Reflux.createStore({
     let vcardQueue = [];
     let $this = this;
 
-    console.log('New items', newItems);
+    // console.log('New items', newItems);
 
     this.roster = Immutable.List(newItems).map(function (item, index) {
       item = Immutable.fromJS(item);
@@ -114,7 +114,7 @@ let RosterStore = Reflux.createStore({
       });
 
       if (typeof oldItem === 'undefined') {
-        console.log('New item', item.toJS());
+        // console.log('New item', item.toJS());
 
         item = item.merge({
           vcard: {
@@ -128,7 +128,7 @@ let RosterStore = Reflux.createStore({
         return item;
       }
 
-      console.log('Merging items', oldItem.toJS(), item.toJS());
+      // console.log('Merging items', oldItem.toJS(), item.toJS());
 
       return oldItem.merge(item);
     });
@@ -137,7 +137,7 @@ let RosterStore = Reflux.createStore({
       let item        = queueItem[0];
       let updateIndex = queueItem[1];
 
-      console.log('Updating vcard for ' + item.get('jid'));
+      // console.log('Updating vcard for ' + item.get('jid'));
 
       Connection.vcard.get(function (stanza) {
         $this.roster = $this.roster.update(updateIndex, function (val) {

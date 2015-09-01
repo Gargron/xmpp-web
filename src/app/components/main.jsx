@@ -28,11 +28,17 @@ let Main = React.createClass({
 
   getInitialState () {
     return {
-      loggedIn: false,
+      loggedIn: localStorage.loggedIn || false,
+      jid:      localStorage.jid,
+      password: localStorage.password,
     };
   },
 
   onLogin (jid, password) {
+    localStorage.jid      = jid;
+    localStorage.password = password; // FIXME
+    localStorage.loggedIn = true;
+
     this.setState({
       jid:      jid,
       password: password,
@@ -41,6 +47,10 @@ let Main = React.createClass({
   },
 
   onLogout () {
+    localStorage.removeItem('jid');
+    localStorage.removeItem('password');
+    localStorage.removeItem('loggedIn');
+
     this.setState({
       jid:      '',
       password: '',

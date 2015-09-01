@@ -11,7 +11,7 @@ let LoginForm = React.createClass({
     return {
       jid:      '',
       password: '',
-      error:    false,
+      error:    '',
     };
   },
 
@@ -37,7 +37,7 @@ let LoginForm = React.createClass({
   handleJidChange (e) {
     this.setState({
       jid:   e.target.value,
-      error: false,
+      error: '',
     });
   },
 
