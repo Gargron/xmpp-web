@@ -2,6 +2,36 @@ let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 
+let stanzaToVCard = function (stanza) {
+  let nickname = '';
+  let photo    = '';
+
+  if (stanza.querySelectorAll('NICKNAME').length > 0) {
+    nickname = stanza.querySelector('NICKNAME').textContent;
+  }
+
+  if (stanza.querySelectorAll('N').length > 0) {
+    if (stanza.querySelectorAll('N GIVEN').length > 0) {
+      nickname = stanza.querySelector('N GIVEN').textContent;
+    }
+
+    if (stanza.querySelectorAll('N FAMILY').length > 0) {
+      nickname = nickname + " " + stanza.querySelector('N FAMILY').textContent;
+    }
+  }
+
+  if (stanza.querySelectorAll('PHOTO').length > 0) {
+    photo = 'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent;
+  }
+
+  return {
+    vcard: {
+      nickname: nickname,
+      photo:    photo,
+    },
+  };
+};
+
 let RosterStore = Reflux.createStore({
 
   init () {
@@ -9,6 +39,8 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.rosterChange, this.onRosterChange);
     this.listenTo(Actions.rosterRequestReceived, this.onRosterRequestReceived);
     this.listenTo(Actions.rosterStateChange, this.onRosterStateChange);
+    this.listenTo(Actions.authorize, this.onAuthorize);
+    this.listenTo(Actions.reject, this.onReject);
   },
 
   onConnection () {
@@ -24,8 +56,13 @@ let RosterStore = Reflux.createStore({
   },
 
   onRosterRequestReceived (jid) {
-    this.queue = this.queue.push(jid);
-    this._notify();
+    if (typeof this.get(jid) === 'undefined') {
+      this.queue = this.queue.push(jid);
+      this._notify();
+    } else {
+      // Authorize the contact we earlier sent request to
+      Connection.roster.authorize(jid);
+    }
   },
 
   onRosterStateChange (jid, newState) {
@@ -42,6 +79,24 @@ let RosterStore = Reflux.createStore({
       return val.set('state', newState);
     });
 
+    this._notify();
+  },
+
+  onAuthorize (jid) {
+    Connection.roster.authorize(jid);
+    Connection.roster.subscribe(jid);
+  },
+
+  onReject (jid) {
+    Connection.roster.unauthorize(jid);
+
+    let itemIndex = this.queue.indexOf(jid);
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    this.queue = this.queue.delete(itemIndex);
     this._notify();
   },
 
@@ -86,14 +141,7 @@ let RosterStore = Reflux.createStore({
 
       Connection.vcard.get(function (stanza) {
         $this.roster = $this.roster.update(updateIndex, function (val) {
-          val = val.merge({
-            vcard: {
-              nickname: stanza.querySelector('NICKNAME').textContent,
-              photo:    'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent,
-            },
-          });
-
-          return val;
+          return val.merge(stanzaToVCard(stanza));
         });
 
         $this._notify();
@@ -132,12 +180,17 @@ let RosterStore = Reflux.createStore({
     let status  = 'Offline';
     let photo   = '';
 
-    if (u.getIn(['vcard', 'nickname']) !== '') {
+    if (u.getIn(['vcard', 'nickname'], '') !== '') {
       name    = u.getIn(['vcard', 'nickname']);
       initial = name.substr(0, 1).toUpperCase();
     }
 
-    if (u.get('resources').size > 0) {
+    if (u.get('name', null) != null) {
+      name    = u.get('name');
+      initial = name.substr(0, 1).toUpperCase();
+    }
+
+    if (u.get('resources', []).size > 0) {
       let topResource = u.get('resources').maxBy(function (r) {
         return r.get('priority');
       });
@@ -146,7 +199,7 @@ let RosterStore = Reflux.createStore({
     }
 
 
-    if (u.getIn(['vcard', 'photo']) !== '') {
+    if (u.getIn(['vcard', 'photo'], '') !== '') {
       photo = u.getIn(['vcard', 'photo']);
     }
 

@@ -12,6 +12,9 @@ let Actions = Reflux.createActions([
   'rosterRequestReceived',
   'rosterStateChange',
 
+  'authorize',
+  'reject',
+
   'openChat',
 
   'messageReceived',
