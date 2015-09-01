@@ -12,6 +12,7 @@ let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
 
 let Message = require('./message');
+let MessageForm = require('./message_form');
 
 let ConversationView = React.createClass({
   mixins: [
@@ -48,22 +49,27 @@ let ConversationView = React.createClass({
     );
 
     if (!!this.props.jid) {
-      let user   = RosterStore.extractDisplayData(this.state.partner, this.props.jid);
-      let avatar = <Avatar size={40}>{user.initial}</Avatar>;
+      let user     = RosterStore.extractDisplayData(this.state.partner, this.props.jid);
+      let avatar   = <Avatar size={40}>{user.initial}</Avatar>;
+      let subtitle = user.status;
 
       if (user.photo !== '') {
         avatar = <Avatar size={40} src={user.photo} />;
       }
 
+      if (user.state === 'composing') {
+        subtitle = <span>Composing...</span>;
+      }
+
       let messages = this.state.messages.map(function (m) {
-        return <Message key={m.get('id')} message={m} />;
+        return <Message key={m.get('time')} message={m} />;
       });
 
       contents = (
         <div className="conversation-view">
           <Toolbar className="header">
             <ToolbarGroup key={0} float="left">
-              <CardHeader style={{'padding': '8px 0px', 'margin-left': '-16px', 'line-height': '20px'}} title={user.name} subtitle={user.status} avatar={avatar} />
+              <CardHeader style={{padding: '8px 0px', marginLeft: '-16px', lineHeight: '20px'}} title={user.name} subtitle={subtitle} avatar={avatar} />
             </ToolbarGroup>
 
             <ToolbarGroup key={2} float="right">
@@ -73,6 +79,10 @@ let ConversationView = React.createClass({
 
           <div className="messages">
             {{messages}}
+          </div>
+
+          <div className="pane-bottom">
+            <MessageForm user={this.props.jid} />
           </div>
         </div>
       );

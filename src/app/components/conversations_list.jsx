@@ -50,7 +50,7 @@ let ConversationsList = React.createClass({
 
           <ToolbarGroup key={1} float="right">
             <DropDownIcon menuItems={[{payload: '1', text: 'Test'}]}>
-              <FontIcon className="material-icons" style={{'line-height': '56px', 'padding-left': '24px'}}>menu</FontIcon>
+              <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>menu</FontIcon>
             </DropDownIcon>
           </ToolbarGroup>
         </Toolbar>

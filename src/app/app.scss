@@ -90,7 +90,7 @@ body {
   padding: 0 24px;
 }
 
-.roster-request-form {
+.form-compact {
   border: 1px solid #ccc;
   background: #fff;
   border-radius: 3px;
@@ -128,13 +128,27 @@ body {
       display: block;
       position: absolute;
       top: 8px;
-      left: -12px;
+      left: -5px;
       bottom: auto;
       width: 0;
-      border-width: 5px 12px 5px 0;
+      border-width: 5px 5px 5px 0;
       border-style: solid;
       border-color: transparent #fff;
       transform: scale(1.1);
+    }
+  }
+
+  &.belongs-to-self {
+    .message-bubble {
+      float: right;
+      background: #B2DFDB;
+
+      &:after {
+        left: auto;
+        right: -5px;
+        border-width: 5px 0 5px 5px;
+        border-color: transparent #B2DFDB;
+      }
     }
   }
 
@@ -165,4 +179,8 @@ body {
   .message-bubble__text__inner {
     white-space: normal;
   }
+}
+
+.message-form {
+
 }

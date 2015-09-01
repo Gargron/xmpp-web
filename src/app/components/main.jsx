@@ -14,6 +14,7 @@ let ConversationsList = require('./conversations_list');
 let Main = React.createClass({
   mixins: [
     Reflux.listenTo(Actions.connection, "onConnection"),
+    Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
     Reflux.connect(ConversationsStore, "conversations"),
   ],
 
@@ -34,7 +35,11 @@ let Main = React.createClass({
   },
 
   onConnection () {
-    this.refs.snackbar.show();
+    this.refs.sbConnectionEstablished.show();
+  },
+
+  onConnectionLost () {
+    this.refs.sbConnectionLost.show();
   },
 
   render () {
@@ -43,7 +48,8 @@ let Main = React.createClass({
         <ConversationView jid={this.state.conversations.opened} />
         <ConversationsList />
 
-        <Snackbar ref="snackbar" message="Connection established" autoHideDuration={1000} />
+        <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
+        <Snackbar ref="sbConnectionLost" message="Connection lost" />
       </div>
     );
   },

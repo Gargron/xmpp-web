@@ -8,6 +8,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.rosterChange, this.onRosterChange);
     this.listenTo(Actions.rosterRequestReceived, this.onRosterRequestReceived);
+    this.listenTo(Actions.rosterStateChange, this.onRosterStateChange);
   },
 
   onConnection () {
@@ -27,40 +28,68 @@ let RosterStore = Reflux.createStore({
     this._notify();
   },
 
+  onRosterStateChange (jid, newState) {
+    let itemIndex = this.roster.findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    this.roster = this.roster.update(itemIndex, function (val) {
+      console.log('State change', val.get('jid'), newState);
+      return val.set('state', newState);
+    });
+
+    this._notify();
+  },
+
   _updateRoster (newItems) {
     let vcardQueue = [];
     let $this = this;
 
-    this.roster = this.roster.merge(newItems);
+    console.log('New items', newItems);
 
-    this.roster = this.roster.map(function (item, index) {
-      if (!item.has('vcard')) {
-        item = item.set('vcard', Immutable.Map({
-          nickname: '',
-          photo: '',
-        }));
-      }
+    this.roster = Immutable.List(newItems).map(function (item, index) {
+      item = Immutable.fromJS(item);
 
-      if (!item.has('stanza')) {
-        item = item.set('stanza', null);
+      let oldItem = $this.roster.find(function (val) {
+        return val.get('jid') === item.get('jid');
+      });
+
+      if (typeof oldItem === 'undefined') {
+        console.log('New item', item.toJS());
+
+        item = item.merge({
+          vcard: {
+            nickname: '',
+            photo:    '',
+          },
+        });
+
         vcardQueue.push([item, index]);
+
+        return item;
       }
 
-      return item;
+      console.log('Merging items', oldItem.toJS(), item.toJS());
+
+      return oldItem.merge(item);
     });
 
     vcardQueue.forEach(function (queueItem) {
       let item        = queueItem[0];
       let updateIndex = queueItem[1];
 
+      console.log('Updating vcard for ' + item.get('jid'));
+
       Connection.vcard.get(function (stanza) {
         $this.roster = $this.roster.update(updateIndex, function (val) {
           val = val.merge({
-            stanza: stanza,
-
             vcard: {
               nickname: stanza.querySelector('NICKNAME').textContent,
-              photo: 'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent,
+              photo:    'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent,
             },
           });
 
@@ -72,7 +101,7 @@ let RosterStore = Reflux.createStore({
     });
 
     this._notify();
-    Connection.send($pres().tree());
+    this._announcePresence();
   },
 
   get (jid) {
@@ -93,6 +122,7 @@ let RosterStore = Reflux.createStore({
         initial: defaultJID.substr(0, 1).toUpperCase(),
         photo:   '',
         status:  'Not in your contacts',
+        state:   '',
       };
     }
 
@@ -126,6 +156,7 @@ let RosterStore = Reflux.createStore({
       initial: initial,
       photo:   photo,
       status:  status,
+      state:   u.get('state'),
     };
   },
 
@@ -149,6 +180,11 @@ let RosterStore = Reflux.createStore({
       queue:  this.queue,
       roster: this.roster,
     });
+  },
+
+  _announcePresence () {
+    let stanza = $pres().c('show').t('chat').up().c('status').t('Testing XMPP Web').up();
+    Connection.send(stanza);
   },
 
 });
