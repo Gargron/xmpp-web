@@ -1,8 +1,8 @@
 (function () {
-  let React = require('react/addons');
+  let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
-  let Style = require('./app.scss');
-  let Main = require('./components/main.jsx');
+  let Style   = require('./app.scss');
+  let Main    = require('./components/main.jsx');
   let Actions = require('./actions.js');
 
   //Needed for React Developer Tools
@@ -18,4 +18,7 @@
   // For more details see: https://facebook.github.io/react/docs/top-level-api.html#react.render
   React.render(<Main />, document.body);
 
+  window.onunload = function () {
+    React.unmountComponentAtNode(document.body);
+  };
 })();
