@@ -3,12 +3,19 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let moment    = require('moment');
 
+let ConnectionStore = require('./connection');
+
 let ConversationsStore = Reflux.createStore({
 
   init () {
+    this.listenTo(ConnectionStore, this.onConnectionStore);
     this.listenTo(Actions.openChat, this.onOpenChat);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
+  },
+
+  onConnectionStore (store) {
+    this.connection = store.connection;
   },
 
   onOpenChat (jid) {
@@ -45,9 +52,7 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onSendMessage (jid, body) {
-    let sender = Connection.jid;
-
-    console.log('Send', sender, jid, body);
+    let sender = this.connection.jid;
 
     let stanza = $msg({
       from: sender,
@@ -57,7 +62,7 @@ let ConversationsStore = Reflux.createStore({
       xmlns: Strophe.NS.CHATSTATES,
     }).up();
 
-    Connection.send(stanza);
+    this.connection.send(stanza);
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
@@ -67,13 +72,13 @@ let ConversationsStore = Reflux.createStore({
       }));
     });
 
-    console.log(this.messages.toJS());
-
     this._notify();
   },
 
   getInitialState () {
-    this.opened = false;
+    if (typeof this.opened === 'undefined') {
+      this.opened = false;
+    }
 
     if (typeof this.messages === 'undefined') {
       this.messages = Immutable.Map();

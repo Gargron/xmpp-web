@@ -2,6 +2,7 @@ let React              = require('react');
 let mui                = require('material-ui');
 let Reflux             = require('reflux');
 let Actions            = require('../actions');
+let ConnectionStore    = require('../stores/connection');
 
 let ThemeManager = new mui.Styles.ThemeManager();
 let Colors       = mui.Styles.Colors;
@@ -11,10 +12,7 @@ let LoginForm = require('./login_form');
 let App       = require('./app');
 
 let Main = React.createClass({
-  mixins: [
-    Reflux.listenTo(Actions.login, "onLogin"),
-    Reflux.listenTo(Actions.logout, "onLogout"),
-  ],
+  mixins: [Reflux.connect(ConnectionStore, "connection")],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
@@ -26,38 +24,6 @@ let Main = React.createClass({
     };
   },
 
-  getInitialState () {
-    return {
-      loggedIn: localStorage.loggedIn || false,
-      jid:      localStorage.jid,
-      password: localStorage.password,
-    };
-  },
-
-  onLogin (jid, password) {
-    localStorage.jid      = jid;
-    localStorage.password = password; // FIXME
-    localStorage.loggedIn = true;
-
-    this.setState({
-      jid:      jid,
-      password: password,
-      loggedIn: true,
-    });
-  },
-
-  onLogout () {
-    localStorage.removeItem('jid');
-    localStorage.removeItem('password');
-    localStorage.removeItem('loggedIn');
-
-    this.setState({
-      jid:      '',
-      password: '',
-      loggedIn: false,
-    });
-  },
-
   componentWillMount() {
     ThemeManager.setPalette({
       accent1Color: Colors.teal500,
@@ -65,8 +31,8 @@ let Main = React.createClass({
   },
 
   render () {
-    if (this.state.loggedIn) {
-      return <App jid={this.state.jid} password={this.state.password} />;
+    if (this.state.connection.loggedIn) {
+      return <App />;
     } else {
       return <LoginForm />;
     }

@@ -1,4 +1,5 @@
 let React   = require('react');
+let Reflux  = require('reflux');
 let mui     = require('material-ui');
 let Actions = require('../actions');
 

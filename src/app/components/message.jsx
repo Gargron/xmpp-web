@@ -1,12 +1,15 @@
-let React = require('react');
-let moment = require('moment');
+let React           = require('react');
+let Reflux          = require('reflux');
+let moment          = require('moment');
+let ConnectionStore = require('../stores/connection');
 
 let Message = React.createClass({
+  mixins: [Reflux.connect(ConnectionStore, 'connection')],
 
   render () {
     let classes = ["message"];
 
-    if (this.props.message.get('from') === Connection.jid) {
+    if (this.props.message.get('from') === this.state.connection.connection.jid) {
       classes.push("belongs-to-self");
     }
 

@@ -2,6 +2,8 @@ let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 
+let ConnectionStore = require('./connection');
+
 let stanzaToVCard = function (stanza) {
   let nickname = '';
   let photo    = '';
@@ -35,6 +37,7 @@ let stanzaToVCard = function (stanza) {
 let RosterStore = Reflux.createStore({
 
   init () {
+    this.listenTo(ConnectionStore, this.onConnectionStore);
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.rosterChange, this.onRosterChange);
     this.listenTo(Actions.rosterRequestReceived, this.onRosterRequestReceived);
@@ -44,10 +47,16 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
   },
 
-  onConnection () {
+  onConnectionStore (store) {
+    this.connection = store.connection;
+  },
+
+  onConnection (connection) {
     let $this = this;
 
-    Connection.roster.get(function (items) {
+    this.connection = connection;
+
+    this.connection.roster.get(function (items) {
       $this._updateRoster(items);
     });
   },
@@ -62,7 +71,7 @@ let RosterStore = Reflux.createStore({
   },
 
   onSendRosterRequest (jid) {
-    Connection.roster.subscribe(jid);
+    this.connection.roster.subscribe(jid);
   },
 
   onRosterStateChange (jid, newState) {
@@ -83,12 +92,12 @@ let RosterStore = Reflux.createStore({
   },
 
   onAuthorize (jid) {
-    Connection.roster.authorize(jid);
-    Connection.roster.subscribe(jid);
+    this.connection.roster.authorize(jid);
+    this.connection.roster.subscribe(jid);
   },
 
   onReject (jid) {
-    Connection.roster.unauthorize(jid);
+    this.connection.roster.unauthorize(jid);
 
     let itemIndex = this.queue.indexOf(jid);
 
@@ -139,7 +148,7 @@ let RosterStore = Reflux.createStore({
 
       // console.log('Updating vcard for ' + item.get('jid'));
 
-      Connection.vcard.get(function (stanza) {
+      $this.connection.vcard.get(function (stanza) {
         $this.roster = $this.roster.update(updateIndex, function (val) {
           return val.merge(stanzaToVCard(stanza));
         });
@@ -237,7 +246,7 @@ let RosterStore = Reflux.createStore({
 
   _announcePresence () {
     let stanza = $pres().c('show').t('chat').up().c('status').t('Testing XMPP Web').up();
-    Connection.send(stanza);
+    this.connection.send(stanza);
   },
 
 });
