@@ -21,7 +21,7 @@ let MessageForm = React.createClass({
   },
 
   handleKeyUp (e) {
-    if (e.keyCode === 13 && this.state.body.length > 0) {
+    if (e.keyCode === 13) {
       this._commitMessage();
     }
   },
@@ -31,6 +31,10 @@ let MessageForm = React.createClass({
   },
 
   _commitMessage () {
+    if (this.state.body.length === 0) {
+      return;
+    }
+
     Actions.sendMessage(this.props.user, this.state.body);
 
     this.setState({
