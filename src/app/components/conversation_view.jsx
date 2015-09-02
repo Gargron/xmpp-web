@@ -10,6 +10,7 @@ let Avatar       = mui.Avatar;
 let FontIcon     = mui.FontIcon;
 let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
+let IconButton   = mui.IconButton;
 
 let Message = require('./message');
 let MessageForm = require('./message_form');
@@ -73,7 +74,9 @@ let ConversationView = React.createClass({
             </ToolbarGroup>
 
             <ToolbarGroup key={2} float="right">
-              <FontIcon className="material-icons">lock</FontIcon>
+              <IconButton tooltip="No end-to-end encryption" style={{lineHeight: '56px', paddingLeft: '24px'}}>
+                <FontIcon className="material-icons">lock_open</FontIcon>
+              </IconButton>
             </ToolbarGroup>
           </Toolbar>
 
