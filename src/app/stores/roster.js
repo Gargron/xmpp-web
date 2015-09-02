@@ -49,6 +49,8 @@ let RosterStore = Reflux.createStore({
 
   onConnectionStore (store) {
     this.connection = store.connection;
+    this.status     = store.account.get('status');
+    this._announcePresence();
   },
 
   onConnection (connection) {
@@ -245,7 +247,7 @@ let RosterStore = Reflux.createStore({
   },
 
   _announcePresence () {
-    let stanza = $pres().c('show').t('chat').up().c('status').t('Testing XMPP Web').up();
+    let stanza = $pres().c('status').t(this.status).up();
     this.connection.send(stanza);
   },
 

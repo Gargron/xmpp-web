@@ -11,10 +11,12 @@ let List         = mui.List;
 let ListDivider  = mui.ListDivider;
 let FontIcon     = mui.FontIcon;
 let DropDownIcon = mui.DropDownIcon;
+let IconButton   = mui.IconButton;
 
 let RosterItem        = require('./roster_item');
 let RosterRequestItem = require('./roster_request_item');
 let RosterRequestForm = require('./roster_request_form');
+let RosterAccount     = require('./roster_account');
 
 let ConversationsList = React.createClass({
   mixins: [Reflux.connect(RosterStore, "roster")],
@@ -56,7 +58,7 @@ let ConversationsList = React.createClass({
       <div className="conversations-list">
         <Toolbar className="header">
           <ToolbarGroup key={0} float="left">
-            <ToolbarTitle text="Account" />
+            <ToolbarTitle text="Contacts" />
           </ToolbarGroup>
 
           <ToolbarGroup key={1} float="right">
@@ -65,6 +67,10 @@ let ConversationsList = React.createClass({
             </DropDownIcon>
           </ToolbarGroup>
         </Toolbar>
+
+        <List className="roster-account">
+          <RosterAccount />
+        </List>
 
         <List className="roster">
           {{roster}}

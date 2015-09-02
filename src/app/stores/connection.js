@@ -1,17 +1,13 @@
 let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
-
-let makeConnection = function (jid, password) {
-
-
-  return connection;
-};
+let Immutable = require('immutable');
 
 let ConnectionStore = Reflux.createStore({
 
   init () {
     this.listenTo(Actions.login, this.onLogin);
     this.listenTo(Actions.logout, this.onLogout);
+    this.listenTo(Actions.connection, this.onConnection);
   },
 
   onLogin (jid, password) {
@@ -39,6 +35,22 @@ let ConnectionStore = Reflux.createStore({
     this._notify();
   },
 
+  onConnection () {
+    let $this = this;
+
+    this.connection.vcard.get(function (stanza) {
+      if (stanza.querySelectorAll('NICKNAME').length > 0) {
+        $this.account = $this.account.set('nickname', stanza.querySelector('NICKNAME').textContent);
+      }
+
+      if (stanza.querySelectorAll('PHOTO').length > 0) {
+        $this.account = $this.account.set('photo', 'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent);
+      }
+
+      $this._notify();
+    }, this.jid);
+  },
+
   getInitialState () {
     if (typeof this.jid === 'undefined') {
       this.jid = null;
@@ -63,11 +75,20 @@ let ConnectionStore = Reflux.createStore({
       }
     }
 
+    if (typeof this.account === 'undefined') {
+      this.account = Immutable.Map({
+        nickname: '',
+        photo:    '',
+        status:   'Online in XMPP Web',
+      });
+    }
+
     return {
       loggedIn:   this.loggedIn,
       jid:        this.jid,
       password:   this.password,
       connection: this.connection,
+      account:    this.account,
     };
   },
 
@@ -77,6 +98,7 @@ let ConnectionStore = Reflux.createStore({
       jid:        this.jid,
       password:   this.password,
       connection: this.connection,
+      account:    this.account,
     });
   },
 
