@@ -36,7 +36,12 @@ body {
     background: #ccc url('/images/bg_welcome.png');
     overflow-x: hidden;
     overflow-y: scroll;
-    padding-top: 60px;
+    display: flex;
+    flex-direction: column;
+
+    .messages__space {
+      flex: 1 1 auto;
+    }
   }
 
   &.is-empty {

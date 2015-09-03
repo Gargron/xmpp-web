@@ -35,7 +35,7 @@ let MessageForm = React.createClass({
       return;
     }
 
-    Actions.sendMessage(this.props.user, this.state.body);
+    Actions.sendMessage(this.props.jid, this.state.body);
 
     this.setState({
       body: '',

@@ -1,8 +1,7 @@
-let React = require('react');
-let mui = require('material-ui');
-let Reflux = require('reflux');
+let React       = require('react');
+let mui         = require('material-ui');
+let Reflux      = require('reflux');
 let RosterStore = require('../stores/roster');
-let ConversationsStore = require('../stores/conversations');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
@@ -12,8 +11,8 @@ let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
 let IconButton   = mui.IconButton;
 
-let Message = require('./message');
-let MessageForm = require('./message_form');
+let MessageForm  = require('./message_form');
+let MessagesList = require('./messages_list');
 
 let ConversationView = React.createClass({
   mixins: [
@@ -22,10 +21,6 @@ let ConversationView = React.createClass({
         return item.get('jid') === this.props.jid;
       }.bind(this));
     }),
-
-    Reflux.connectFilter(ConversationsStore, "messages", function (store) {
-      return store.messages.get(this.props.jid, []);
-    }),
   ],
 
   componentWillReceiveProps (nextProps) {
@@ -33,8 +28,6 @@ let ConversationView = React.createClass({
       partner: RosterStore.getInitialState().roster.find(function (item) {
         return item.get('jid') === nextProps.jid;
       }),
-
-      messages: ConversationsStore.getInitialState().messages.get(nextProps.jid, []),
     });
   },
 
@@ -62,10 +55,6 @@ let ConversationView = React.createClass({
         subtitle = <span>Composing...</span>;
       }
 
-      let messages = this.state.messages.map(function (m) {
-        return <Message key={m.get('time')} message={m} />;
-      });
-
       contents = (
         <div className="conversation-view">
           <Toolbar className="header">
@@ -80,12 +69,10 @@ let ConversationView = React.createClass({
             </ToolbarGroup>
           </Toolbar>
 
-          <div className="messages">
-            {{messages}}
-          </div>
+          <MessagesList jid={this.props.jid} />
 
           <div className="pane-bottom">
-            <MessageForm user={this.props.jid} />
+            <MessageForm jid={this.props.jid} />
           </div>
         </div>
       );
