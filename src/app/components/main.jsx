@@ -12,7 +12,10 @@ let LoginForm = require('./login_form');
 let App       = require('./app');
 
 let Main = React.createClass({
-  mixins: [Reflux.connect(ConnectionStore, "connection")],
+  mixins: [
+    Reflux.connect(ConnectionStore, "connection"),
+    Reflux.listenTo(Actions.messageReceived, "onMessageReceived"),
+  ],
 
   childContextTypes: {
     muiTheme: React.PropTypes.object,
@@ -28,6 +31,19 @@ let Main = React.createClass({
     ThemeManager.setPalette({
       accent1Color: Colors.teal500,
     });
+  },
+
+  onMessageReceived (stanza) {
+    if (stanza.querySelectorAll('body').length === 0) {
+      return;
+    }
+
+    if (typeof Audio === 'undefined') {
+      return;
+    }
+
+    let audio = new Audio('/notification_message.mp3');
+    audio.play();
   },
 
   render () {
