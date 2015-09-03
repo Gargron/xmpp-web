@@ -45,6 +45,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.authorize, this.onAuthorize);
     this.listenTo(Actions.reject, this.onReject);
     this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
+    this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
   },
 
   onConnectionStore (store) {
@@ -77,6 +78,12 @@ let RosterStore = Reflux.createStore({
 
   onSendRosterRequest (jid) {
     this.connection.roster.subscribe(jid);
+  },
+
+  onRemoveFromRoster (jid) {
+    this.connection.roster.unauthorize(jid);
+    this.connection.roster.unsubscribe(jid);
+    this.connection.roster.remove(jid);
   },
 
   onRosterStateChange (jid, newState) {

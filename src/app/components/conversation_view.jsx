@@ -2,6 +2,7 @@ let React       = require('react');
 let mui         = require('material-ui');
 let Reflux      = require('reflux');
 let RosterStore = require('../stores/roster');
+let Actions     = require('../actions');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
@@ -10,6 +11,7 @@ let FontIcon     = mui.FontIcon;
 let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
 let IconButton   = mui.IconButton;
+let DropDownIcon = mui.DropDownIcon;
 
 let MessageForm  = require('./message_form');
 let MessagesList = require('./messages_list');
@@ -29,6 +31,13 @@ let ConversationView = React.createClass({
         return item.get('jid') === nextProps.jid;
       }),
     });
+  },
+
+  handleMenuClick (e, key, data) {
+    if (data.payload === 'remove') {
+      Actions.removeFromRoster(this.props.jid);
+      Actions.closeChat();
+    }
   },
 
   render () {
@@ -55,6 +64,10 @@ let ConversationView = React.createClass({
         subtitle = <span>Composing...</span>;
       }
 
+      let menu = [
+        { payload: 'remove', text: 'Remove' },
+      ];
+
       contents = (
         <div className="conversation-view">
           <Toolbar className="header">
@@ -66,6 +79,10 @@ let ConversationView = React.createClass({
               <IconButton tooltip="No end-to-end encryption" style={{lineHeight: '56px', paddingLeft: '24px'}}>
                 <FontIcon className="material-icons">lock_open</FontIcon>
               </IconButton>
+
+              <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} style={{float: 'none'}}>
+                <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>more_vert</FontIcon>
+              </DropDownIcon>
             </ToolbarGroup>
           </Toolbar>
 

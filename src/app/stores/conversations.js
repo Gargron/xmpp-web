@@ -10,6 +10,7 @@ let ConversationsStore = Reflux.createStore({
   init () {
     this.listenTo(ConnectionStore, this.onConnectionStore);
     this.listenTo(Actions.openChat, this.onOpenChat);
+    this.listenTo(Actions.closeChat, this.onCloseChat);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
   },
@@ -20,6 +21,11 @@ let ConversationsStore = Reflux.createStore({
 
   onOpenChat (jid) {
     this.opened = jid;
+    this._notify();
+  },
+
+  onCloseChat () {
+    this.opened = false;
     this._notify();
   },
 
