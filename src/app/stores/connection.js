@@ -1,6 +1,7 @@
 let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
 let Immutable = require('immutable');
+let utils     = require('../utils');
 
 let ConnectionStore = Reflux.createStore({
 
@@ -58,11 +59,25 @@ let ConnectionStore = Reflux.createStore({
     let stanza = $iq({
       type: 'set',
       jid:  this.jid,
-    }).c('vCard', { xmlns: Strophe.NS.VCARD }).c('NICKNAME').t(nickname).up().up();
+    }).c('vCard', { xmlns: Strophe.NS.VCARD });
+
+    if (nickname.length > 0) {
+      stanza = stanza.c('NICKNAME').t(nickname).up();
+    }
+
+    if (photo.length > 0) {
+      let fileType = photo.split(';')[0].split(':')[1];
+      let fileBlob = photo.split(',')[1];
+
+      stanza.c('PHOTO').c('TYPE').t(fileType).up().c('BINVAL').t(fileBlob).up().up();
+    }
 
     this.connection.sendIQ(stanza, function () {
       $this.account = $this.account.set('nickname', nickname);
+      $this.account = $this.account.set('photo', photo);
+
       $this._notify();
+      $this._announceUpdatedPhoto(photo);
     });
   },
 
@@ -165,6 +180,19 @@ let ConnectionStore = Reflux.createStore({
       Actions.messageReceived(message);
       return true;
     }, null, 'message', 'chat');
+  },
+
+  _announceUpdatedPhoto (dataURL) {
+    let stanza = $pres().c('x', { xmlns: 'vcard-temp:x:update' })
+
+    if (dataURL === '') {
+      stanza = stanza.c('photo').up();
+    } else {
+      let sha1sum = utils.imageToSha1(dataURL);
+      stanza = stanza.c('photo').t(sha1sum).up().up();
+    }
+
+    this.connection.send(stanza);
   },
 
 });

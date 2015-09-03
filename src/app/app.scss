@@ -214,9 +214,10 @@ body {
     position: relative;
     top: -24px;
     left: -24px;
-    padding-top: 24px;
-    padding-left: 24px;
-    padding-bottom: 24px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     input[type=file] {
       display: none;
