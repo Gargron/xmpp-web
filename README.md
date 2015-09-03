@@ -25,3 +25,4 @@
 - XEP-0280: Message Carbons
 - XEP-0313: Message Archive Management
 - OTR support
+- INVENT A XEP FOR CUTE LOVE LIVE STICKERS
