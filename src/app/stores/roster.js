@@ -50,7 +50,6 @@ let RosterStore = Reflux.createStore({
   onConnectionStore (store) {
     this.connection = store.connection;
     this.status     = store.account.get('status');
-    this._announcePresence();
   },
 
   onConnection (connection) {
@@ -86,7 +85,6 @@ let RosterStore = Reflux.createStore({
     }
 
     this.roster = this.roster.update(itemIndex, function (val) {
-      console.log('State change', val.get('jid'), newState);
       return val.set('state', newState);
     });
 

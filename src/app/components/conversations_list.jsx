@@ -16,7 +16,7 @@ let IconButton   = mui.IconButton;
 let RosterItem        = require('./roster_item');
 let RosterRequestItem = require('./roster_request_item');
 let RosterRequestForm = require('./roster_request_form');
-let RosterAccount     = require('./roster_account');
+let EditProfileDialog = require('./edit_profile_dialog');
 
 let ConversationsList = React.createClass({
   mixins: [Reflux.connect(RosterStore, "roster")],
@@ -24,11 +24,14 @@ let ConversationsList = React.createClass({
   handleMenuClick (e, key, item) {
     if (item.payload === 'logout') {
       Actions.logout();
+    } else if (item.payload === 'profile') {
+      Actions.openEditProfileDialog();
     }
   },
 
   render () {
     let menu = [
+      { payload: 'profile', text: 'Profile' },
       { payload: 'logout', text: 'Logout' },
     ];
 
@@ -62,15 +65,11 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
 
           <ToolbarGroup key={1} float="right">
-            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick}>
+            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} menuItemStyle={{width: '240px'}}>
               <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>menu</FontIcon>
             </DropDownIcon>
           </ToolbarGroup>
         </Toolbar>
-
-        <List className="roster-account">
-          <RosterAccount />
-        </List>
 
         <List className="roster">
           {{roster}}
@@ -81,6 +80,8 @@ let ConversationsList = React.createClass({
         <div className="pane-bottom">
           <RosterRequestForm />
         </div>
+
+        <EditProfileDialog />
       </div>
     );
   },

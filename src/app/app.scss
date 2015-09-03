@@ -202,3 +202,28 @@ body {
 .form-actions {
   margin-top: 10px;
 }
+
+.edit-profile-dialog {
+  width: 280px !important;
+
+  .photo-pick {
+    background: #ccc;
+    box-sizing: border-box;
+    border-radius: 3px 3px 0 0;
+    width: 280px;
+    position: relative;
+    top: -24px;
+    left: -24px;
+    padding-top: 24px;
+    padding-left: 24px;
+    padding-bottom: 24px;
+
+    input[type=file] {
+      display: none;
+    }
+  }
+
+  .photo-pick__preview {
+    cursor: pointer;
+  }
+}

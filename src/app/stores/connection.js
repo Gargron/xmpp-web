@@ -8,6 +8,7 @@ let ConnectionStore = Reflux.createStore({
     this.listenTo(Actions.login, this.onLogin);
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.connection, this.onConnection);
+    this.listenTo(Actions.updateProfile, this.onUpdateProfile);
   },
 
   onLogin (jid, password) {
@@ -49,6 +50,20 @@ let ConnectionStore = Reflux.createStore({
 
       $this._notify();
     }, this.jid);
+  },
+
+  onUpdateProfile (nickname, photo) {
+    let $this  = this;
+
+    let stanza = $iq({
+      type: 'set',
+      jid:  this.jid,
+    }).c('vCard', { xmlns: Strophe.NS.VCARD }).c('NICKNAME').t(nickname).up().up();
+
+    this.connection.sendIQ(stanza, function () {
+      $this.account = $this.account.set('nickname', nickname);
+      $this._notify();
+    });
   },
 
   getInitialState () {
