@@ -1,9 +1,14 @@
 let React              = require('react');
 let mui                = require('material-ui');
 let Reflux             = require('reflux');
+let moment             = require('moment');
 let ConversationsStore = require('../stores/conversations');
 
 let Message = require('./message');
+
+let daysDiffer = function (a, b) {
+  return !moment(a.get('time')).isSame(b.get('time'), 'day');
+};
 
 let MessagesList = React.createClass({
   mixins: [
@@ -24,8 +29,19 @@ let MessagesList = React.createClass({
   },
 
   render () {
-    let messages = this.state.messages.map(function (m, i) {
-      return <Message key={i} message={m} />;
+    let messages = this.state.messages.map(function (m, i, iter) {
+      let prev = iter.get(i - 1, null);
+
+      if (i - 1 === -1 || (prev != null && daysDiffer(m, prev))) {
+        return (
+          <div key={i}>
+            <div className="messages__header">{moment(m.get('time')).format('DD.MM.YYYY')}</div>
+            <Message message={m} />
+          </div>
+        );
+      } else {
+        return <Message key={i} message={m} />;
+      }
     });
 
     return (

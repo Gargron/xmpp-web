@@ -42,6 +42,14 @@ body {
     .messages__space {
       flex: 1 1 auto;
     }
+
+    .messages__header {
+      text-align: center;
+      line-height: 20px;
+      padding: 10px 0;
+      font-size: 14px;
+      color: #222;
+    }
   }
 
   &.is-empty {
@@ -124,11 +132,12 @@ body {
 .message {
   clear: both;
   padding: 10px 24px;
+  overflow: hidden;
 
   .message-bubble {
     float: left;
     max-width: 400px;
-    border-radius: 3px;
+    border-radius: 6px;
     background: #fff;
     padding: 8px;
     box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
@@ -139,10 +148,10 @@ body {
       display: block;
       position: absolute;
       top: 8px;
-      left: -5px;
+      left: -7px;
       bottom: auto;
       width: 0;
-      border-width: 5px 5px 5px 0;
+      border-width: 5px 7px 5px 0;
       border-style: solid;
       border-color: transparent #fff;
       transform: scale(1.1);
@@ -156,8 +165,8 @@ body {
 
       &:after {
         left: auto;
-        right: -5px;
-        border-width: 5px 0 5px 5px;
+        right: -7px;
+        border-width: 5px 0 5px 7px;
         border-color: transparent #B2DFDB;
       }
     }
