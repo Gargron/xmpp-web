@@ -185,6 +185,19 @@ body {
       display: inline;
       content: "            ";
     }
+
+    a {
+      color: #3f51b5;
+      text-decoration: underline;
+
+      &:hover {
+        text-decoration: none;
+      }
+
+      &:visited {
+        color: #673ab7;
+      }
+    }
   }
 
   .message-bubble__text__inner {
