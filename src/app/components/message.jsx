@@ -2,6 +2,7 @@ let React           = require('react');
 let Reflux          = require('reflux');
 let moment          = require('moment');
 let emoji           = require('emoji');
+let utils           = require('../utils');
 let ConnectionStore = require('../stores/connection');
 
 let Message = React.createClass({
@@ -14,7 +15,7 @@ let Message = React.createClass({
       classes.push("belongs-to-self");
     }
 
-    let body = emoji.unifiedToHTML(this.props.message.get('body'));
+    let body = emoji.unifiedToHTML(utils.escapeHTML(this.props.message.get('body')));
 
     return (
       <div className={classes.join(" ")}>

@@ -32,6 +32,12 @@ let Utils = {
     return sha1sum.toString(CryptoJS.enc.Hex);
   },
 
+  escapeHTML (html) {
+    let textarea = document.createElement('textarea');
+    textarea.textContent = html;
+    return textarea.innerHTML;
+  },
+
 };
 
 module.exports = Utils;
