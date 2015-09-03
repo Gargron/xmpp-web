@@ -172,14 +172,22 @@ let ConnectionStore = Reflux.createStore({
       Actions.rosterChange(items);
     });
 
-    this.connection.roster.registerRequestCallback(function (jid) {
-      Actions.rosterRequestReceived(jid);
-    });
-
     this.connection.addHandler(function (message) {
       Actions.messageReceived(message);
       return true;
     }, null, 'message', 'chat');
+
+    this.connection.addHandler(function (stanza) {
+      let jid  = stanza.getAttribute('from');
+      let from = Strophe.getBareJidFromJid(jid);
+      let type = stanza.getAttribute('type');
+
+      if (type === 'subscribe') {
+        Actions.rosterRequestReceived(from);
+      }
+
+      return true;
+    }, null, 'presence', null, null, null);
   },
 
   _announceUpdatedPhoto (dataURL) {

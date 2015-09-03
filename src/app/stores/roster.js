@@ -67,8 +67,12 @@ let RosterStore = Reflux.createStore({
   },
 
   onRosterRequestReceived (jid) {
-    this.queue = this.queue.push(jid);
-    this._notify();
+    if (typeof this.get(jid) === 'undefined') {
+      this.queue = this.queue.push(jid);
+      this._notify();
+    } else {
+      Actions.authorize(jid);
+    }
   },
 
   onSendRosterRequest (jid) {
