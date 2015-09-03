@@ -16,6 +16,15 @@ let RosterItem = React.createClass({
       avatar = <Avatar src={user.photo} />;
     }
 
+    if (this.props.user.get('unread') > 0) {
+      avatar = (
+        <div className='unread-counter'>
+          {avatar}
+          <div className='unread-counter__inner'>{this.props.user.get('unread')}</div>
+        </div>
+      );
+    }
+
     return (
       <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={user.status} onClick={Actions.openChat.bind(this, user.jid)}/>
     );

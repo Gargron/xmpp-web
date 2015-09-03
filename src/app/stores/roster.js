@@ -2,7 +2,8 @@ let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 
-let ConnectionStore = require('./connection');
+let ConnectionStore    = require('./connection');
+let ConversationsStore = require('./conversations');
 
 let stanzaToVCard = function (stanza) {
   let nickname = '';
@@ -38,6 +39,7 @@ let RosterStore = Reflux.createStore({
 
   init () {
     this.listenTo(ConnectionStore, this.onConnectionStore);
+    this.listenTo(ConversationsStore, this.onConversationsStore);
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.rosterChange, this.onRosterChange);
     this.listenTo(Actions.rosterRequestReceived, this.onRosterRequestReceived);
@@ -46,11 +48,18 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.reject, this.onReject);
     this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
     this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
+    this.listenTo(Actions.messageReceived, this.onMessageReceived);
+    this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
+    this.listenTo(Actions.openChat, this.onOpenChat);
   },
 
   onConnectionStore (store) {
     this.connection = store.connection;
     this.status     = store.account.get('status');
+  },
+
+  onConversationsStore (store) {
+    this.openedChat = store.opened;
   },
 
   onConnection (connection) {
@@ -99,6 +108,8 @@ let RosterStore = Reflux.createStore({
       return val.set('state', newState);
     });
 
+    console.log('New state for ' + jid, newState);
+
     this._notify();
   },
 
@@ -117,6 +128,53 @@ let RosterStore = Reflux.createStore({
     }
 
     this.queue = this.queue.delete(itemIndex);
+    this._notify();
+  },
+
+  onMessageReceived (stanza) {
+    if (stanza.querySelectorAll('body').length === 0) {
+      return;
+    }
+
+    let from = stanza.getAttribute('from');
+    let jid  = Strophe.getBareJidFromJid(from);
+
+    if (this.openedChat === jid) {
+      return;
+    }
+
+    let itemIndex = this.roster.findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    this.roster = this.roster.update(itemIndex, function (val) {
+      return val.set('unread', val.get('unread') + 1);
+    });
+
+    this._notify();
+  },
+
+  onOpenChat (jid) {
+    this.onResetUnreadCounter(jid);
+  },
+
+  onResetUnreadCounter (jid) {
+    let itemIndex = this.roster.findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    this.roster = this.roster.update(itemIndex, function (val) {
+      return val.set('unread', 0);
+    });
+
     this._notify();
   },
 
@@ -141,6 +199,8 @@ let RosterStore = Reflux.createStore({
             nickname: '',
             photo:    '',
           },
+
+          unread: 0,
         });
 
         vcardQueue.push([item, index]);
