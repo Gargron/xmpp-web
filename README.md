@@ -5,18 +5,23 @@
     npm install
     npm start
 
+## Implemented XEPs
+
+- XEP-0054: vCards
+- XEP-0153: vCard-based Avatars
+
 ## Road map
 
-- Messaging
 - Group messages by day in the list, some form of infinite scrolling
-- Roster functionality (but without groups)
-- Status/vCard management (only status text and nickname/photo)
 - Announce active/inactive/composing activity
 - Persist data in localStorage
 - Desktop notifications and sounds
+- Highlight unread messages in contact list
+- Emojis and links in messages
 
 ## Nice to haves but probably far off
 
-- Message Carbons
-- Message Archive Management
-- OTR support. For now maybe a lock button with tooltip "For end-to-end encryption, install a desktop client"
+- XEP-0184: Message Delivery Receipts
+- XEP-0280: Message Carbons
+- XEP-0313: Message Archive Management
+- OTR support
