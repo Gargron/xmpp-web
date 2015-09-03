@@ -1,6 +1,7 @@
 let React           = require('react');
 let Reflux          = require('reflux');
 let moment          = require('moment');
+let emoji           = require('emoji');
 let ConnectionStore = require('../stores/connection');
 
 let Message = React.createClass({
@@ -13,10 +14,12 @@ let Message = React.createClass({
       classes.push("belongs-to-self");
     }
 
+    let body = emoji.unifiedToHTML(this.props.message.get('body'));
+
     return (
       <div className={classes.join(" ")}>
         <div className="message-bubble">
-          <div className="message-bubble__text"><span className="message-bubble__text__inner">{this.props.message.get('body')}</span></div>
+          <div className="message-bubble__text"><span className="message-bubble__text__inner" dangerouslySetInnerHTML={{__html: body}}></span></div>
           <div className="message-bubble__time">{moment(this.props.message.get('time')).format('HH:mm')}</div>
         </div>
       </div>

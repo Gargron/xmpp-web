@@ -40,7 +40,8 @@ var config = {
     // Strophe.js
     new TransferWebpackPlugin([
       {from: 'strophe'},
-      {from: 'strophe-plugins'}
+      {from: 'strophe-plugins'},
+      {from: 'emoji/lib'}
     ], nodeModulesPath)
   ],
   module: {
