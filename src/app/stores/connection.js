@@ -193,6 +193,8 @@ let ConnectionStore = Reflux.createStore({
 
       if (type === 'subscribe') {
         Actions.rosterRequestReceived(from);
+      } else if (stanza.querySelectorAll('x[xmlns=vcard-temp:x:update]').length > 0) {
+        Actions.profileUpdateReceived(stanza);
       }
 
       return true;
@@ -213,7 +215,7 @@ let ConnectionStore = Reflux.createStore({
   },
 
   _announcePresence () {
-    let stanza = $pres().c('status').t(this.account.get('status')).up();
+    let stanza = $pres().c('status').t(this.account.get('status')).up().c('priority').t('40').up();
     this.connection.send(stanza);
   },
 

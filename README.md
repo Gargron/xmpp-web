@@ -9,11 +9,11 @@
 
 - XEP-0054: vCards
 - XEP-0153: vCard-based Avatars
+- XEP-0085: Chat State Notifications
 
 ## Road map
 
 - Some form of infinite scrolling
-- Announce active/inactive/composing activity
 - Persist data in localStorage
 - Desktop notifications
 

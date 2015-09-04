@@ -13,6 +13,7 @@ let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
 let IconButton   = mui.IconButton;
 let DropDownIcon = mui.DropDownIcon;
+let Colors       = mui.Styles.Colors;
 
 let MessageForm  = require('./message_form');
 let MessagesList = require('./messages_list');
@@ -44,7 +45,7 @@ let ConversationView = React.createClass({
   render () {
     let contents = (
       <div className="conversation-view is-empty">
-        <Paper zDepth={1} circle={true}>
+        <Paper zDepth={0} circle={true}>
           <img src="/images/welcome.png" className="conversation-view__welcome" />
         </Paper>
 
@@ -54,8 +55,8 @@ let ConversationView = React.createClass({
 
     if (!!this.props.jid) {
       let user     = utils.userDisplayData(this.state.partner, this.props.jid);
-      let avatar   = <Avatar size={40}>{user.initial}</Avatar>;
-      let subtitle = <span dangerouslySetInnerHTML={{__html: user.status}} />;
+      let avatar   = <Avatar size={40} backgroundColor={Colors.teal500}>{user.initial}</Avatar>;
+      let subtitle = <span dangerouslySetInnerHTML={{__html: user.status === '' ? 'Online' : user.status}} />;
 
       if (user.photo !== '') {
         avatar = <Avatar size={40} src={user.photo} />;

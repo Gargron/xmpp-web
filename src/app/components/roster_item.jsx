@@ -6,13 +6,14 @@ let utils       = require('../utils');
 
 let ListItem = mui.ListItem;
 let Avatar   = mui.Avatar;
+let Colors   = mui.Styles.Colors;
 
 let RosterItem = React.createClass({
   mixins: [React.addons.PureRenderMixin],
 
   render () {
     let user   = utils.userDisplayData(this.props.user);
-    let avatar = <Avatar>{user.initial}</Avatar>;
+    let avatar = <Avatar backgroundColor={Colors.teal500}>{user.initial}</Avatar>;
     let status = user.status;
 
     if (user.photo !== '') {

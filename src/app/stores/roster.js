@@ -15,6 +15,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
+    this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
   },
 
   onConnection (connection) {
@@ -198,6 +199,29 @@ let RosterStore = Reflux.createStore({
     });
 
     this.trigger(this.roster);
+  },
+
+  onProfileUpdateReceived (stanza) {
+    let from = stanza.getAttribute('from');
+    let jid  = Strophe.getBareJidFromJid(from);
+
+    let itemIndex = this.roster.findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    let $this = this;
+
+    this.connection.vcard.get(function (_stanza) {
+      $this.roster = $this.roster.update(itemIndex, function (val) {
+        return val.merge(utils.parseVCard(_stanza));
+      });
+
+      $this.trigger($this.roster);
+    }, jid);
   },
 
   getInitialState () {

@@ -9,6 +9,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
+    this.listenTo(Actions.sendStateChange, this.onSendStateChange);
   },
 
   onConnection (connection) {
@@ -48,7 +49,7 @@ let ConversationsStore = Reflux.createStore({
 
     let stanza = $msg({
       from: sender,
-      to: jid,
+      to:   jid,
       type: 'chat',
     }).c('body').t(body).up().c('active', {
       xmlns: Strophe.NS.CHATSTATES,
@@ -65,6 +66,20 @@ let ConversationsStore = Reflux.createStore({
     });
 
     this.trigger(this.messages);
+  },
+
+  onSendStateChange (jid, state) {
+    let sender = this.connection.jid;
+
+    let stanza = $msg({
+      from: sender,
+      to:   jid,
+      type: 'chat',
+    }).c(state, {
+      xmlns: Strophe.NS.CHATSTATES,
+    }).up();
+
+    this.connection.send(stanza);
   },
 
   getInitialState () {

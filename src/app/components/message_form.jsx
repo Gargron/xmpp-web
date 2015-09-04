@@ -1,6 +1,7 @@
 let React   = require('react');
 let Actions = require('../actions');
 let mui     = require('material-ui');
+let utils   = require('../utils');
 
 let IconButton = mui.IconButton;
 let FontIcon   = mui.FontIcon;
@@ -11,8 +12,31 @@ let MessageForm = React.createClass({
 
   getInitialState () {
     return {
-      body: '',
+      body:        '',
+      idleSeconds: 0,
+      typing:      false,
     };
+  },
+
+  componentDidMount () {
+    this.everySecond = setInterval(function () {
+      let newIdleSeconds = this.state.idleSeconds + 1;
+      let newTyping      = this.state.typing;
+
+      if (newTyping && newIdleSeconds > 4) {
+        newTyping = false;
+        Actions.sendStateChange(this.props.jid, 'active');
+      }
+
+      this.setState({
+        idleSeconds: newIdleSeconds,
+        typing:      newTyping,
+      });
+    }.bind(this), 1000);
+  },
+
+  componentWillUnmount () {
+    clearInterval(this.everySecond);
   },
 
   handleChange (e) {
@@ -24,6 +48,21 @@ let MessageForm = React.createClass({
   handleKeyUp (e) {
     if (e.keyCode === 13) {
       this._commitMessage();
+    } else {
+      let newTyping = this.state.typing;
+      let newIdleSeconds;
+
+      if (!newTyping) {
+        this.typing = true;
+        Actions.sendStateChange(this.props.jid, 'composing');
+      }
+
+      newIdleSeconds = 0;
+
+      this.setState({
+        idleSeconds: newIdleSeconds,
+        typing:      newTyping,
+      });
     }
   },
 
