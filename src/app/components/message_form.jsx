@@ -7,6 +7,7 @@ let FontIcon   = mui.FontIcon;
 let Colors     = mui.Styles.Colors;
 
 let MessageForm = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   getInitialState () {
     return {

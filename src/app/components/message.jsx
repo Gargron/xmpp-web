@@ -4,15 +4,12 @@ let moment          = require('moment');
 let emoji           = require('emoji');
 let linkify         = require('linkifyjs/string');
 let utils           = require('../utils');
-let ConnectionStore = require('../stores/connection');
 
 let Message = React.createClass({
-  mixins: [Reflux.connect(ConnectionStore, 'connection')],
-
   render () {
     let classes = ["message"];
 
-    if (this.props.message.get('from') === this.state.connection.connection.jid) {
+    if (this.props.message.get('from') === this.props.ownJID) {
       classes.push("belongs-to-self");
     }
 

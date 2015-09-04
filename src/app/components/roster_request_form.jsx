@@ -7,6 +7,7 @@ let FontIcon   = mui.FontIcon;
 let Colors     = mui.Styles.Colors;
 
 let RosterRequestForm = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   getInitialState () {
     return {

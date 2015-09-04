@@ -1,26 +1,21 @@
 let React       = require('react');
 let mui         = require('material-ui');
-let Reflux      = require('reflux');
-let RosterStore = require('../stores/roster');
 let Actions     = require('../actions');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
 let ToolbarTitle = mui.ToolbarTitle;
-let List         = mui.List;
 let ListDivider  = mui.ListDivider;
 let FontIcon     = mui.FontIcon;
 let DropDownIcon = mui.DropDownIcon;
 let IconButton   = mui.IconButton;
 
-let RosterItem        = require('./roster_item');
-let RosterRequestItem = require('./roster_request_item');
+let RosterList        = require('./roster_list');
+let RosterRequestList = require('./roster_request_list');
 let RosterRequestForm = require('./roster_request_form');
 let EditProfileDialog = require('./edit_profile_dialog');
 
 let ConversationsList = React.createClass({
-  mixins: [Reflux.connect(RosterStore, "roster")],
-
   handleMenuClick (e, key, item) {
     if (item.payload === 'logout') {
       Actions.logout();
@@ -34,28 +29,6 @@ let ConversationsList = React.createClass({
       { payload: 'profile', text: 'Profile' },
       { payload: 'logout', text: 'Logout' },
     ];
-
-    let roster = this.state.roster.roster.map(function (u) {
-      return <RosterItem key={u.get('jid')} user={u} />;
-    });
-
-    let queue = this.state.roster.queue.map(function (u) {
-      return <RosterRequestItem key={u} jid={u} />;
-    });
-
-    let queueList = '';
-
-    if (this.state.roster.queue.size > 0) {
-      queueList = (
-        <div>
-          <ListDivider />
-
-          <List className="roster-queue" subheader="Contact requests">
-            {{queue}}
-          </List>
-        </div>
-      );
-    }
 
     return (
       <div className="conversations-list">
@@ -71,11 +44,8 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
         </Toolbar>
 
-        <List className="roster">
-          {{roster}}
-        </List>
-
-        {{queueList}}
+        <RosterList />
+        <RosterRequestList />
 
         <div className="pane-bottom">
           <RosterRequestForm />

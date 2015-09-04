@@ -2,14 +2,16 @@ let React       = require('react');
 let mui         = require('material-ui');
 let RosterStore = require('../stores/roster');
 let Actions     = require('../actions');
+let utils       = require('../utils');
 
 let ListItem = mui.ListItem;
 let Avatar   = mui.Avatar;
 
 let RosterItem = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   render () {
-    let user   = RosterStore.extractDisplayData(this.props.user);
+    let user   = utils.userDisplayData(this.props.user);
     let avatar = <Avatar>{user.initial}</Avatar>;
     let status = user.status;
 
@@ -31,7 +33,7 @@ let RosterItem = React.createClass({
     }
 
     return (
-      <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={status} onClick={Actions.openChat.bind(this, user.jid)}/>
+      <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={<span dangerouslySetInnerHTML={{__html: status}} />} onClick={Actions.openChat.bind(this, user.jid)}/>
     );
   },
 

@@ -4,40 +4,38 @@ let Reflux             = require('reflux');
 let ConversationsStore = require('../stores/conversations');
 let Actions            = require('../actions');
 
-let Snackbar = mui.Snackbar;
-
 let ConversationView  = require('./conversation_view');
 let ConversationsList = require('./conversations_list');
 
 let App = React.createClass({
   mixins: [
-    Reflux.listenTo(Actions.connection, "onConnection"),
-    Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
-    Reflux.listenTo(Actions.loginFailed, "onLoginFailed"),
-    Reflux.connect(ConversationsStore, "conversations"),
+    Reflux.listenTo(Actions.openChat, "onOpenChat"),
+    Reflux.listenTo(Actions.closeChat, "onCloseChat"),
   ],
 
-  onConnection () {
-    this.refs.sbConnectionEstablished.show();
+  getInitialState () {
+    return {
+      openedJID: false,
+    };
   },
 
-  onConnectionLost () {
-    this.refs.sbConnectionLost.show();
+  onOpenChat (jid) {
+    this.setState({
+      openedJID: jid,
+    });
   },
 
-  onLoginFailed () {
-    this.refs.sbLoginFailed.show();
+  onCloseChat () {
+    this.setState({
+      openedJID: false,
+    });
   },
 
   render () {
     return (
       <div className="wrapper">
-        <ConversationView jid={this.state.conversations.opened} />
+        <ConversationView jid={this.state.openedJID} ownJID={this.props.ownJID} />
         <ConversationsList />
-
-        <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
-        <Snackbar ref="sbConnectionLost" message="Connection lost" />
-        <Snackbar ref="sbLoginFailed" message="Login failed" action="Correct login details" onActionTouchTap={Actions.logout} />
       </div>
     );
   },

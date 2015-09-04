@@ -11,6 +11,7 @@ let Actions = Reflux.createActions([
   'rosterChange',
   'rosterRequestReceived',
   'rosterStateChange',
+  'rosterReady',
 
   'resetUnreadCounter',
 

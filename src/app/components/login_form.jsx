@@ -7,6 +7,7 @@ let TextField    = mui.TextField;
 let RaisedButton = mui.RaisedButton;
 
 let LoginForm = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   getInitialState () {
     return {

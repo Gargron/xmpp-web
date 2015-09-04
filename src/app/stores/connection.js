@@ -3,6 +3,8 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let utils     = require('../utils');
 
+const BOSH_URL = 'http://web.zeonfed.org/http-bind';
+
 let ConnectionStore = Reflux.createStore({
 
   init () {
@@ -10,13 +12,15 @@ let ConnectionStore = Reflux.createStore({
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.updateProfile, this.onUpdateProfile);
+    this.listenTo(Actions.rosterReady, this.onRosterReady);
+    this.getInitialState();
   },
 
   onLogin (jid, password) {
     this.loggedIn   = true;
     this.jid        = jid;
     this.password   = password;
-    this.connection = new Strophe.Connection('http://zeonfed.org:5280/http-bind');
+    this.connection = new Strophe.Connection(BOSH_URL);
 
     this._persist();
     this._notify();
@@ -51,6 +55,10 @@ let ConnectionStore = Reflux.createStore({
 
       $this._notify();
     }, this.jid);
+  },
+
+  onRosterReady () {
+    this._announcePresence();
   },
 
   onUpdateProfile (nickname, photo) {
@@ -96,21 +104,20 @@ let ConnectionStore = Reflux.createStore({
 
     this._load();
 
-    if (typeof this.connection === 'undefined') {
-      this.connection = null;
-
-      if (this.loggedIn) {
-        this.connection = new Strophe.Connection('http://zeonfed.org:5280/http-bind');
-        this._registerConnectionHandlers();
-      }
-    }
-
     if (typeof this.account === 'undefined') {
       this.account = Immutable.Map({
         nickname: '',
         photo:    '',
         status:   'Online in XMPP Web',
       });
+    }
+
+    if (typeof this.connection === 'undefined') {
+      this.connection = null;
+
+      if (this.loggedIn) {
+        Actions.login(this.jid, this.password);
+      }
     }
 
     return {
@@ -200,6 +207,11 @@ let ConnectionStore = Reflux.createStore({
       stanza = stanza.c('photo').t(sha1sum).up().up();
     }
 
+    this.connection.send(stanza);
+  },
+
+  _announcePresence () {
+    let stanza = $pres().c('status').t(this.account.get('status')).up();
     this.connection.send(stanza);
   },
 

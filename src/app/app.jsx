@@ -11,9 +11,11 @@
   let Main    = require('./components/main');
   let Actions = require('./actions');
   let ConnectionStore = require('./stores/connection');
+  let Perf    = React.addons.Perf;
 
   //Needed for React Developer Tools
   window.React = React;
+  window.Perf  = Perf;
 
   //Needed for onTouchTap
   //Can go away when react 1.0 release

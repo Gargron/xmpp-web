@@ -3,23 +3,20 @@ let mui                = require('material-ui');
 let Reflux             = require('reflux');
 let moment             = require('moment');
 let ConversationsStore = require('../stores/conversations');
+let utils              = require('../utils');
 
 let Message = require('./message');
 
-let daysDiffer = function (a, b) {
-  return !moment(a.get('time')).isSame(b.get('time'), 'day');
-};
-
 let MessagesList = React.createClass({
   mixins: [
-    Reflux.connectFilter(ConversationsStore, "messages", function (store) {
-      return store.messages.get(this.props.jid, []);
+    Reflux.connectFilter(ConversationsStore, "items", function (store) {
+      return store.get(this.props.jid, []);
     }),
   ],
 
   componentWillReceiveProps (nextProps) {
     this.setState({
-      messages: ConversationsStore.getInitialState().messages.get(nextProps.jid, []),
+      items: ConversationsStore.getInitialState().get(nextProps.jid, []),
     });
   },
 
@@ -29,18 +26,20 @@ let MessagesList = React.createClass({
   },
 
   render () {
-    let messages = this.state.messages.map(function (m, i, iter) {
+    let ownJID = this.props.ownJID;
+
+    let messages = this.state.items.map(function (m, i, iter) {
       let prev = iter.get(i - 1, null);
 
-      if (i - 1 === -1 || (prev != null && daysDiffer(m, prev))) {
+      if (i - 1 === -1 || (prev != null && utils.daysDiffer(m, prev))) {
         return (
           <div key={i}>
             <div className="messages__header">{moment(m.get('time')).format('DD.MM.YYYY')}</div>
-            <Message message={m} />
+            <Message message={m} ownJID={ownJID} />
           </div>
         );
       } else {
-        return <Message key={i} message={m} />;
+        return <Message key={i} message={m} ownJID={ownJID} />;
       }
     });
 

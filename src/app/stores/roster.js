@@ -1,65 +1,18 @@
 let Reflux    = require('reflux');
-let Actions   = require('../actions.js');
+let Actions   = require('../actions');
 let Immutable = require('immutable');
-
-let ConnectionStore    = require('./connection');
-let ConversationsStore = require('./conversations');
-
-let stanzaToVCard = function (stanza) {
-  let nickname = '';
-  let photo    = '';
-
-  if (stanza.querySelectorAll('NICKNAME').length > 0) {
-    nickname = stanza.querySelector('NICKNAME').textContent;
-  }
-
-  if (stanza.querySelectorAll('N').length > 0) {
-    if (stanza.querySelectorAll('N GIVEN').length > 0) {
-      nickname = stanza.querySelector('N GIVEN').textContent;
-    }
-
-    if (stanza.querySelectorAll('N FAMILY').length > 0) {
-      nickname = nickname + " " + stanza.querySelector('N FAMILY').textContent;
-    }
-  }
-
-  if (stanza.querySelectorAll('PHOTO').length > 0) {
-    photo = 'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent;
-  }
-
-  return {
-    vcard: {
-      nickname: nickname,
-      photo:    photo,
-    },
-  };
-};
+let utils     = require('../utils');
 
 let RosterStore = Reflux.createStore({
 
   init () {
-    this.listenTo(ConnectionStore, this.onConnectionStore);
-    this.listenTo(ConversationsStore, this.onConversationsStore);
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.rosterChange, this.onRosterChange);
-    this.listenTo(Actions.rosterRequestReceived, this.onRosterRequestReceived);
     this.listenTo(Actions.rosterStateChange, this.onRosterStateChange);
-    this.listenTo(Actions.authorize, this.onAuthorize);
-    this.listenTo(Actions.reject, this.onReject);
-    this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
     this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
-  },
-
-  onConnectionStore (store) {
-    this.connection = store.connection;
-    this.status     = store.account.get('status');
-  },
-
-  onConversationsStore (store) {
-    this.openedChat = store.opened;
   },
 
   onConnection (connection) {
@@ -69,24 +22,12 @@ let RosterStore = Reflux.createStore({
 
     this.connection.roster.get(function (items) {
       $this._updateRoster(items);
+      Actions.rosterReady();
     });
   },
 
   onRosterChange (items) {
     this._updateRoster(items);
-  },
-
-  onRosterRequestReceived (jid) {
-    if (typeof this.get(jid) === 'undefined') {
-      this.queue = this.queue.push(jid);
-      this._notify();
-    } else {
-      Actions.authorize(jid);
-    }
-  },
-
-  onSendRosterRequest (jid) {
-    this.connection.roster.subscribe(jid);
   },
 
   onRemoveFromRoster (jid) {
@@ -108,27 +49,9 @@ let RosterStore = Reflux.createStore({
       return val.set('state', newState);
     });
 
-    console.log('New state for ' + jid, newState);
+    // console.log('New state for ' + jid, newState);
 
-    this._notify();
-  },
-
-  onAuthorize (jid) {
-    this.connection.roster.authorize(jid);
-    this.connection.roster.subscribe(jid);
-  },
-
-  onReject (jid) {
-    this.connection.roster.unauthorize(jid);
-
-    let itemIndex = this.queue.indexOf(jid);
-
-    if (itemIndex === -1) {
-      return;
-    }
-
-    this.queue = this.queue.delete(itemIndex);
-    this._notify();
+    this.trigger(this.roster);
   },
 
   onMessageReceived (stanza) {
@@ -138,10 +61,6 @@ let RosterStore = Reflux.createStore({
 
     let from = stanza.getAttribute('from');
     let jid  = Strophe.getBareJidFromJid(from);
-
-    if (this.openedChat === jid) {
-      return;
-    }
 
     let itemIndex = this.roster.findIndex(function (val) {
       return val.get('jid') === jid;
@@ -155,7 +74,7 @@ let RosterStore = Reflux.createStore({
       return val.set('unread', val.get('unread') + 1);
     });
 
-    this._notify();
+    this.trigger(this.roster);
   },
 
   onOpenChat (jid) {
@@ -171,11 +90,15 @@ let RosterStore = Reflux.createStore({
       return;
     }
 
+    if (this.roster.getIn([itemIndex, 'unread']) === 0) {
+      return;
+    }
+
     this.roster = this.roster.update(itemIndex, function (val) {
       return val.set('unread', 0);
     });
 
-    this._notify();
+    this.trigger(this.roster);
   },
 
   _updateRoster (newItems) {
@@ -221,76 +144,14 @@ let RosterStore = Reflux.createStore({
 
       $this.connection.vcard.get(function (stanza) {
         $this.roster = $this.roster.update(updateIndex, function (val) {
-          return val.merge(stanzaToVCard(stanza));
+          return val.merge(utils.parseVCard(stanza));
         });
 
-        $this._notify();
+        $this.trigger($this.roster);
       }, item.get('jid'));
     });
 
-    this._notify();
-    this._announcePresence();
-  },
-
-  get (jid) {
-    if (typeof this.roster === 'undefined') {
-      return;
-    }
-
-    return this.roster.find(function (item) {
-      return item.get('jid') === jid;
-    });
-  },
-
-  extractDisplayData (u, defaultJID) {
-    if (typeof u === 'undefined') {
-      return {
-        jid:     defaultJID,
-        name:    defaultJID,
-        initial: defaultJID.substr(0, 1).toUpperCase(),
-        photo:   '',
-        status:  'Not in your contacts',
-        state:   '',
-      };
-    }
-
-    let jid     = u.get('jid');
-    let name    = jid;
-    let initial = name.substr(0, 1).toUpperCase();
-    let status  = 'Offline';
-    let photo   = '';
-
-    if (u.getIn(['vcard', 'nickname'], '') !== '') {
-      name    = u.getIn(['vcard', 'nickname']);
-      initial = name.substr(0, 1).toUpperCase();
-    }
-
-    if (u.get('name', null) != null) {
-      name    = u.get('name');
-      initial = name.substr(0, 1).toUpperCase();
-    }
-
-    if (u.get('resources', []).size > 0) {
-      let topResource = u.get('resources').maxBy(function (r) {
-        return r.get('priority');
-      });
-
-      status = topResource.get('status');
-    }
-
-
-    if (u.getIn(['vcard', 'photo'], '') !== '') {
-      photo = u.getIn(['vcard', 'photo']);
-    }
-
-    return {
-      jid:     jid,
-      name:    name,
-      initial: initial,
-      photo:   photo,
-      status:  status,
-      state:   u.get('state'),
-    };
+    this.trigger(this.roster);
   },
 
   getInitialState () {
@@ -298,26 +159,7 @@ let RosterStore = Reflux.createStore({
       this.roster = Immutable.List();
     }
 
-    if (typeof this.queue === 'undefined'){
-      this.queue  = Immutable.List();
-    }
-
-    return {
-      queue:  this.queue,
-      roster: this.roster,
-    };
-  },
-
-  _notify () {
-    this.trigger({
-      queue:  this.queue,
-      roster: this.roster,
-    });
-  },
-
-  _announcePresence () {
-    let stanza = $pres().c('status').t(this.status).up();
-    this.connection.send(stanza);
+    return this.roster;
   },
 
 });

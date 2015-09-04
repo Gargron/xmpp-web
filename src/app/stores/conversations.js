@@ -3,30 +3,16 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let moment    = require('moment');
 
-let ConnectionStore = require('./connection');
-
 let ConversationsStore = Reflux.createStore({
 
   init () {
-    this.listenTo(ConnectionStore, this.onConnectionStore);
-    this.listenTo(Actions.openChat, this.onOpenChat);
-    this.listenTo(Actions.closeChat, this.onCloseChat);
+    this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
   },
 
-  onConnectionStore (store) {
-    this.connection = store.connection;
-  },
-
-  onOpenChat (jid) {
-    this.opened = jid;
-    this._notify();
-  },
-
-  onCloseChat () {
-    this.opened = false;
-    this._notify();
+  onConnection (connection) {
+    this.connection = connection;
   },
 
   onMessageReceived (stanza) {
@@ -54,7 +40,7 @@ let ConversationsStore = Reflux.createStore({
       }));
     });
 
-    this._notify();
+    this.trigger(this.messages);
   },
 
   onSendMessage (jid, body) {
@@ -72,35 +58,21 @@ let ConversationsStore = Reflux.createStore({
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
-        from: sender,
+        from: Strophe.getBareJidFromJid(sender),
         body: body,
         time: moment().format(),
       }));
     });
 
-    this._notify();
+    this.trigger(this.messages);
   },
 
   getInitialState () {
-    if (typeof this.opened === 'undefined') {
-      this.opened = false;
-    }
-
     if (typeof this.messages === 'undefined') {
       this.messages = Immutable.Map();
     }
 
-    return {
-      opened:   this.opened,
-      messages: this.messages,
-    };
-  },
-
-  _notify () {
-    this.trigger({
-      opened:   this.opened,
-      messages: this.messages,
-    });
+    return this.messages;
   },
 
 });

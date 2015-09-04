@@ -8,6 +8,7 @@ let FontIcon     = mui.FontIcon;
 let DropDownIcon = mui.DropDownIcon;
 
 let RosterRequestItem = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   handleMenuClick (e, key, data) {
     if (data.payload === 'authorize') {

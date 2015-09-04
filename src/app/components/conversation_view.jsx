@@ -3,6 +3,7 @@ let mui         = require('material-ui');
 let Reflux      = require('reflux');
 let RosterStore = require('../stores/roster');
 let Actions     = require('../actions');
+let utils       = require('../utils');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
@@ -19,7 +20,7 @@ let MessagesList = require('./messages_list');
 let ConversationView = React.createClass({
   mixins: [
     Reflux.connectFilter(RosterStore, "partner", function (store) {
-      return store.roster.find(function (item) {
+      return store.find(function (item) {
         return item.get('jid') === this.props.jid;
       }.bind(this));
     }),
@@ -27,7 +28,7 @@ let ConversationView = React.createClass({
 
   componentWillReceiveProps (nextProps) {
     this.setState({
-      partner: RosterStore.getInitialState().roster.find(function (item) {
+      partner: RosterStore.getInitialState().find(function (item) {
         return item.get('jid') === nextProps.jid;
       }),
     });
@@ -52,7 +53,7 @@ let ConversationView = React.createClass({
     );
 
     if (!!this.props.jid) {
-      let user     = RosterStore.extractDisplayData(this.state.partner, this.props.jid);
+      let user     = utils.userDisplayData(this.state.partner, this.props.jid);
       let avatar   = <Avatar size={40}>{user.initial}</Avatar>;
       let subtitle = user.status;
 
@@ -90,7 +91,7 @@ let ConversationView = React.createClass({
             </ToolbarGroup>
           </Toolbar>
 
-          <MessagesList jid={this.props.jid} />
+          <MessagesList jid={this.props.jid} ownJID={this.props.ownJID} />
 
           <div className="pane-bottom">
             <MessageForm jid={this.props.jid} />

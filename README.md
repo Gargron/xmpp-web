@@ -12,12 +12,10 @@
 
 ## Road map
 
-- Group messages by day in the list, some form of infinite scrolling
+- Some form of infinite scrolling
 - Announce active/inactive/composing activity
 - Persist data in localStorage
-- Desktop notifications and sounds
-- Highlight unread messages in contact list
-- Emojis and links in messages
+- Desktop notifications
 
 ## Nice to haves but probably far off
 
