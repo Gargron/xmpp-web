@@ -3,13 +3,15 @@ var path = require('path');
 var buildPath = path.resolve(__dirname, 'build');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var TransferWebpackPlugin = require('transfer-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
   //Entry points to the project
   entry: [
     'webpack/hot/dev-server',
     'webpack/hot/only-dev-server',
-    path.join(__dirname, '/src/app/app.jsx')
+    path.join(__dirname, '/src/app/app.jsx'),
+    path.join(__dirname, '/src/app/app.scss')
   ],
   //Config options on how to interpret requires imports
   resolve: {
@@ -37,6 +39,10 @@ var config = {
     new TransferWebpackPlugin([
       {from: 'www'}
     ], path.resolve(__dirname, "src")),
+
+    new ExtractTextPlugin('style.css', {
+      allChunks: true
+    })
   ],
   module: {
     //Loaders to interpret non-vanilla javascript code as well as most other extensions including images and text.
@@ -59,7 +65,7 @@ var config = {
 
       {
         test: /\.scss$/,
-        loader: "style!css!sass"
+        loader: ExtractTextPlugin.extract("css!sass")
       },
 
       {

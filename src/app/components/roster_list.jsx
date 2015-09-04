@@ -10,7 +10,25 @@ let RosterList = React.createClass({
   mixins: [Reflux.connect(RosterStore, 'items')],
 
   render () {
-    let roster = this.state.items.map(function (u) {
+    let roster = this.state.items.sort(function (a, b) {
+      if (a.get('last_activity') === null && b.get('last_activity') === null) {
+        return 0;
+      }
+
+      if (a.get('last_activity') === null && b.get('last_activity') != null) {
+        return 1;
+      }
+
+      if (b.get('last_activity') === null && a.get('last_activity') != null) {
+        return -1;
+      }
+
+      if (moment(a.get('last_activity')).isBefore(b.get('last_activity'))) {
+        return 1;
+      } else {
+        return -1;
+      }
+    }).map(function (u) {
       return <RosterItem key={u.get('jid')} user={u} />;
     });
 

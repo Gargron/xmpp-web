@@ -53,7 +53,7 @@ let MessageForm = React.createClass({
       let newIdleSeconds;
 
       if (!newTyping) {
-        this.typing = true;
+        newTyping = true;
         Actions.sendStateChange(this.props.jid, 'composing');
       }
 

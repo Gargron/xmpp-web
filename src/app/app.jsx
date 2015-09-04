@@ -7,7 +7,6 @@
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
-  let Style   = require('./app.scss');
   let Main    = require('./components/main');
   let Actions = require('./actions');
   let ConnectionStore = require('./stores/connection');

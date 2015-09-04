@@ -3,9 +3,13 @@ var path = require('path');
 var buildPath = path.resolve(__dirname, 'build');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var TransferWebpackPlugin = require('transfer-webpack-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
-  entry: [path.join(__dirname, '/src/app/app.jsx')],
+  entry: [
+    path.join(__dirname, '/src/app/app.jsx'),
+    path.join(__dirname, '/src/app/app.scss')
+  ],
   resolve: {
     //When require, do not have to add these extensions to file's name
     extensions: ["", ".js", ".jsx"]
@@ -32,6 +36,10 @@ var config = {
     new TransferWebpackPlugin([
       {from: 'www'}
     ], path.resolve(__dirname,"src")),
+
+    new ExtractTextPlugin('style.css', {
+      allChunks: true
+    })
   ],
   module: {
     preLoaders: [
@@ -51,7 +59,7 @@ var config = {
 
       {
         test: /\.scss$/,
-        loader: "style!css!sass"
+        loader: ExtractTextPlugin.extract("css!sass")
       },
 
       {

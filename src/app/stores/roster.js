@@ -74,13 +74,12 @@ let RosterStore = Reflux.createStore({
     }
 
     this.roster = this.roster.update(itemIndex, function (val) {
-      val = val.set('unread', val.get('unread') + 1);
-      val = val.set('last_activity', moment().format());
-
-      return val;
+      return val.merge({
+        unread:        val.get('unread') + 1,
+        last_activity: moment().format(),
+      });
     });
 
-    this._sortByLastActivity();
     this.trigger(this.roster);
   },
 
@@ -97,30 +96,7 @@ let RosterStore = Reflux.createStore({
       return val.set('last_activity', moment().format());
     });
 
-    this._sortByLastActivity();
     this.trigger(this.roster);
-  },
-
-  _sortByLastActivity () {
-    this.roster = this.roster.sort(function (a, b) {
-      if (a.get('last_activity') === null && b.get('last_activity') === null) {
-        return 0;
-      }
-
-      if (a.get('last_activity') === null && b.get('last_activity') != null) {
-        return 1;
-      }
-
-      if (b.get('last_activity') === null && a.get('last_activity') != null) {
-        return -1;
-      }
-
-      if (moment(a.get('last_activity')).isBefore(b.get('last_activity'))) {
-        return 1;
-      } else {
-        return -1;
-      }
-    });
   },
 
   onOpenChat (jid) {
