@@ -60,6 +60,10 @@ let ConversationView = React.createClass({
         avatar = <Avatar size={40} src={user.photo} />;
       }
 
+      if (subtitle === '') {
+        subtitle = 'Online';
+      }
+
       if (user.state === 'composing') {
         subtitle = <span>Composing...</span>;
       }

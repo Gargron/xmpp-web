@@ -42,7 +42,7 @@ let Main = React.createClass({
       return;
     }
 
-    let audio = new Audio('/notification_message.mp3');
+    let audio = new Audio('/sounds/notification_message.mp3');
     audio.play();
   },
 

@@ -5,44 +5,37 @@ var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var TransferWebpackPlugin = require('transfer-webpack-plugin');
 
 var config = {
-  //Entry points to the project
-  entry: [
-    'webpack/hot/dev-server',
-    'webpack/hot/only-dev-server',
-    path.join(__dirname, '/src/app/app.jsx')
-  ],
-  //Config options on how to interpret requires imports
+  entry: [path.join(__dirname, '/src/app/app.jsx')],
   resolve: {
+    //When require, do not have to add these extensions to file's name
     extensions: ["", ".js", ".jsx"]
+    //node_modules: ["web_modules", "node_modules"]  (Default Settings)
   },
-  //Server Configuration options
-  devServer:{
-    contentBase: '',  //Relative directory for base of server
-    devtool: 'eval',
-    hot: true,        //Live-reload
-    inline: true,
-    port: 3000        //Port Number
-  },
-  devtool: 'eval',
+  //Render source-map file for final build
+  devtool: 'source-map',
+  //output config
   output: {
     path: buildPath,    //Path of output file
-    filename: 'app.js'
+    filename: 'app.js'  //Name of output file
   },
   plugins: [
-    //Enables Hot Modules Replacement
-    new webpack.HotModuleReplacementPlugin(),
+    //Minify the bundle
+    new webpack.optimize.UglifyJsPlugin({
+      compress: {
+        //supresses warnings, usually from module minification
+        warnings: false
+      }
+    }),
     //Allows error warnings but does not stop compiling. Will remove when eslint is added
     new webpack.NoErrorsPlugin(),
-    //Moves files
+    //Transfer Files
     new TransferWebpackPlugin([
       {from: 'www'}
-    ], path.resolve(__dirname, "src")),
+    ], path.resolve(__dirname,"src")),
   ],
   module: {
-    //Loaders to interpret non-vanilla javascript code as well as most other extensions including images and text.
     preLoaders: [
       {
-        //Eslint loader
         test: /\.(js|jsx)$/,
         loader: 'eslint-loader',
         include: [path.resolve(__dirname, "src/app")],
@@ -51,9 +44,8 @@ var config = {
     ],
     loaders: [
       {
-        //React-hot loader and
-        test: /\.(js|jsx)$/,  //All .js and .jsx files
-        loaders: ['react-hot','babel-loader?stage=0'], //react-hot is like browser sync and babel loads jsx and es6-7
+        test: /\.(js|jsx)$/, //All .js and .jsx files
+        loader: 'babel-loader?stage=0', //react-hot is like browser sync and babel loads jsx and es6-7
         exclude: [nodeModulesPath, path.resolve(__dirname, "src/app/vendor")]
       },
 
@@ -68,9 +60,9 @@ var config = {
       },
     ]
   },
-  //eslint config options. Part of the eslint-loader package
+  //Eslint config
   eslint: {
-    configFile: '.eslintrc'
+    configFile: '.eslintrc' //Rules for eslint
   },
 };
 

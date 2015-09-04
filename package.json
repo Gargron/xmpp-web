@@ -21,6 +21,7 @@
     "react-tap-event-plugin": "^0.1.7",
     "reflux": "^0.2.12",
     "sass-loader": "^2.0.1",
+    "script-loader": "^0.6.1",
     "strophe": "^1.2.2",
     "strophe-plugins": "^0.1.2",
     "style-loader": "^0.12.3"

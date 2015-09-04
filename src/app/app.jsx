@@ -1,4 +1,10 @@
 (function () {
+  require('script!strophe/strophe.js');
+  require('script!strophe-plugins/roster.js');
+  require('script!strophe-plugins/vcard.js')
+  require('script!./vendor/sha1.js');
+  require('script!./vendor/lib-typedarrays.js');
+
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
   let Style   = require('./app.scss');

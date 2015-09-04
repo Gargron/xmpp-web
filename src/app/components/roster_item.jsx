@@ -11,6 +11,7 @@ let RosterItem = React.createClass({
   render () {
     let user   = RosterStore.extractDisplayData(this.props.user);
     let avatar = <Avatar>{user.initial}</Avatar>;
+    let status = user.status;
 
     if (user.photo !== '') {
       avatar = <Avatar src={user.photo} />;
@@ -25,8 +26,12 @@ let RosterItem = React.createClass({
       );
     }
 
+    if (status === '') {
+      status = 'Online';
+    }
+
     return (
-      <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={user.status} onClick={Actions.openChat.bind(this, user.jid)}/>
+      <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={status} onClick={Actions.openChat.bind(this, user.jid)}/>
     );
   },
 
