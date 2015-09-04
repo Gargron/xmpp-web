@@ -87,6 +87,11 @@ let Main = React.createClass({
   },
 
   onLoginFailed () {
+    this.setState({
+      loading:  false,
+      loggedIn: false,
+    });
+
     this.refs.sbLoginFailed.show();
   },
 

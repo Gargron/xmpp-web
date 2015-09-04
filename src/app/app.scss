@@ -150,6 +150,7 @@ body {
   clear: both;
   padding: 10px 24px;
   overflow: hidden;
+  flex-shrink: 0;
 
   .message-bubble {
     float: left;

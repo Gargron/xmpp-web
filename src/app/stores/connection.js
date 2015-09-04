@@ -163,8 +163,8 @@ let ConnectionStore = Reflux.createStore({
   _registerConnectionHandlers () {
     let $this = this;
 
-    this.connection.connect(this.jid, this.password, function (status) {
-      console.log('Connection status', status);
+    this.connection.connect(this.jid, this.password, function (status, errorCode) {
+      console.log('Connection status', status, errorCode);
 
       if (status === Strophe.Status.CONNECTED) {
         Actions.connection($this.connection);
@@ -172,6 +172,8 @@ let ConnectionStore = Reflux.createStore({
         Actions.connectionLost();
       } else if (status === Strophe.Status.AUTHFAIL) {
         Actions.loginFailed();
+      } else if (status === Strophe.Status.ERROR) {
+        console.log('Error', errorCode);
       }
     });
 
