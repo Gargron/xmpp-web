@@ -1,6 +1,7 @@
 let Reflux    = require('reflux');
 let Actions   = require('../actions');
 let Immutable = require('immutable');
+let moment    = require('moment');
 let utils     = require('../utils');
 
 let RosterStore = Reflux.createStore({
@@ -11,6 +12,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.rosterStateChange, this.onRosterStateChange);
     this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
+    this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
   },
@@ -71,10 +73,53 @@ let RosterStore = Reflux.createStore({
     }
 
     this.roster = this.roster.update(itemIndex, function (val) {
-      return val.set('unread', val.get('unread') + 1);
+      val = val.set('unread', val.get('unread') + 1);
+      val = val.set('last_activity', moment().format());
+
+      return val;
     });
 
+    this._sortByLastActivity();
     this.trigger(this.roster);
+  },
+
+  onSendMessage (jid, body) {
+    let itemIndex = this.roster.findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (itemIndex === -1) {
+      return;
+    }
+
+    this.roster = this.roster.update(itemIndex, function (val) {
+      return val.set('last_activity', moment().format());
+    });
+
+    this._sortByLastActivity();
+    this.trigger(this.roster);
+  },
+
+  _sortByLastActivity () {
+    this.roster = this.roster.sort(function (a, b) {
+      if (a.get('last_activity') === null && b.get('last_activity') === null) {
+        return 0;
+      }
+
+      if (a.get('last_activity') === null && b.get('last_activity') != null) {
+        return 1;
+      }
+
+      if (b.get('last_activity') === null && a.get('last_activity') != null) {
+        return -1;
+      }
+
+      if (moment(a.get('last_activity')).isBefore(b.get('last_activity'))) {
+        return 1;
+      } else {
+        return -1;
+      }
+    });
   },
 
   onOpenChat (jid) {
@@ -124,6 +169,7 @@ let RosterStore = Reflux.createStore({
           },
 
           unread: 0,
+          last_activity: null,
         });
 
         vcardQueue.push([item, index]);

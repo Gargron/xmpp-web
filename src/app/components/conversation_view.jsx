@@ -55,14 +55,10 @@ let ConversationView = React.createClass({
     if (!!this.props.jid) {
       let user     = utils.userDisplayData(this.state.partner, this.props.jid);
       let avatar   = <Avatar size={40}>{user.initial}</Avatar>;
-      let subtitle = user.status;
+      let subtitle = <span dangerouslySetInnerHTML={{__html: user.status}} />;
 
       if (user.photo !== '') {
         avatar = <Avatar size={40} src={user.photo} />;
-      }
-
-      if (subtitle === '') {
-        subtitle = 'Online';
       }
 
       if (user.state === 'composing') {
