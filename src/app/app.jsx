@@ -1,7 +1,8 @@
 (function () {
   require('script!strophe/strophe.js');
-  require('script!strophe-plugins/roster.js');
-  require('script!strophe-plugins/vcard.js')
+  require('script!strophejs-plugins/roster/strophe.roster.js');
+  require('script!strophejs-plugins/disco/strophe.disco.js');
+  require('script!strophejs-plugins/vcard/strophe.vcard.js');
   require('script!./vendor/sha1.js');
   require('script!./vendor/lib-typedarrays.js');
 

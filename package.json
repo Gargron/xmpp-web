@@ -19,7 +19,7 @@
     "react-tap-event-plugin": "^0.1.7",
     "reflux": "^0.2.12",
     "strophe": "^1.2.2",
-    "strophe-plugins": "^0.1.2"
+    "strophejs-plugins": "git+https://github.com/strophe/strophejs-plugins#d038f8307720ba2ec006555a526e981db02876ca"
   },
   "devDependencies": {
     "babel-core": "^5.8.23",

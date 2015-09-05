@@ -5,7 +5,6 @@ let Actions     = require('../actions');
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
 let ToolbarTitle = mui.ToolbarTitle;
-let ListDivider  = mui.ListDivider;
 let FontIcon     = mui.FontIcon;
 let DropDownIcon = mui.DropDownIcon;
 let IconButton   = mui.IconButton;

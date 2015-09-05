@@ -17,7 +17,7 @@ let RosterQueueStore = Reflux.createStore({
   },
 
   onRosterRequestReceived (jid) {
-    if (typeof this.get(jid) === 'undefined') {
+    if (!this.queue.includes(jid)) {
       this.queue = this.queue.push(jid);
       this.trigger(this.queue);
     } else {
@@ -32,18 +32,15 @@ let RosterQueueStore = Reflux.createStore({
   onAuthorize (jid) {
     this.connection.roster.authorize(jid);
     this.connection.roster.subscribe(jid);
+
+    this.queue = this.queue.delete(this.queue.indexOf(jid));
+    this.trigger(this.queue);
   },
 
   onReject (jid) {
     this.connection.roster.unauthorize(jid);
 
-    let itemIndex = this.queue.indexOf(jid);
-
-    if (itemIndex === -1) {
-      return;
-    }
-
-    this.queue = this.queue.delete(itemIndex);
+    this.queue = this.queue.delete(this.queue.indexOf(jid));
     this.trigger(this.queue);
   },
 

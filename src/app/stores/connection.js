@@ -22,6 +22,14 @@ let ConnectionStore = Reflux.createStore({
     this.password   = password;
     this.connection = new Strophe.Connection(BOSH_URL);
 
+    let resource = Strophe.getResourceFromJid(this.jid);
+
+    if (!resource) {
+      resource = 'web';
+    }
+
+    this.jid = Strophe.getBareJidFromJid(this.jid) + '/' + resource;
+
     this._persist();
     this._notify();
     this._registerConnectionHandlers();
@@ -163,6 +171,12 @@ let ConnectionStore = Reflux.createStore({
   _registerConnectionHandlers () {
     let $this = this;
 
+    this.connection.disco.addIdentity('client', 'web', 'XMPP Web');
+    this.connection.disco.addFeature(Strophe.NS.VCARD);
+    this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+    this.connection.disco.addFeature(Strophe.NS.BOSH);
+    this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
       console.log('Connection status', status, errorCode);
 
@@ -193,7 +207,9 @@ let ConnectionStore = Reflux.createStore({
 
       if (type === 'subscribe') {
         Actions.rosterRequestReceived(from);
-      } else if (stanza.querySelectorAll('x[xmlns=vcard-temp:x:update]').length > 0) {
+      }
+
+      if (stanza.querySelectorAll('x').length > 0) {
         Actions.profileUpdateReceived(stanza);
       }
 

@@ -3,7 +3,9 @@ let mui              = require('material-ui');
 let RosterQueueStore = require('../stores/roster_queue');
 let Reflux           = require('reflux');
 
-let List              = mui.List;
+let List        = mui.List;
+let ListDivider = mui.ListDivider;
+
 let RosterRequestItem = require('./roster_request_item');
 
 let RosterRequestList = React.createClass({
