@@ -15,7 +15,7 @@ let RosterList = React.createClass({
 
     let roster = this.state.items.sort(function (a, b) {
       if (a.get('last_activity') === null && b.get('last_activity') === null) {
-        return 0;
+        return a.get('resources').size > b.get('resources').size ? -1 : 1;
       }
 
       if (a.get('last_activity') === null && b.get('last_activity') != null) {
