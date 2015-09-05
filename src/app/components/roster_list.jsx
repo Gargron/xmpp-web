@@ -2,6 +2,7 @@ let React       = require('react');
 let mui         = require('material-ui');
 let RosterStore = require('../stores/roster');
 let Reflux      = require('reflux');
+let moment      = require('moment');
 
 let List          = mui.List;
 let DocumentTitle = require('react-document-title');
