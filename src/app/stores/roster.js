@@ -16,6 +16,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
     this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
+    this.getInitialState();
   },
 
   onConnection (connection) {

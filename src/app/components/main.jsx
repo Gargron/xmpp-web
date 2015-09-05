@@ -8,9 +8,9 @@ let ThemeManager     = new mui.Styles.ThemeManager();
 let Colors           = mui.Styles.Colors;
 let CircularProgress = mui.CircularProgress;
 let Snackbar         = mui.Snackbar;
-
-let LoginForm = require('./login_form');
-let App       = require('./app');
+let DocumentTitle    = require('react-document-title');
+let LoginForm        = require('./login_form');
+let App              = require('./app');
 
 let Main = React.createClass({
   mixins: [
@@ -107,13 +107,15 @@ let Main = React.createClass({
     }
 
     return (
-      <div className="wrapper__outer">
-        {content}
+      <DocumentTitle title='XMPP Web'>
+        <div className='wrapper__outer'>
+          {content}
 
-        <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
-        <Snackbar ref="sbConnectionLost" message="Connection lost" />
-        <Snackbar ref="sbLoginFailed" message="Login failed" action="Correct login details" onActionTouchTap={Actions.logout} />
-      </div>
+          <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
+          <Snackbar ref="sbConnectionLost" message="Connection lost" />
+          <Snackbar ref="sbLoginFailed" message="Login failed" action="Correct login details" onActionTouchTap={Actions.logout} />
+        </div>
+      </DocumentTitle>
     );
   },
 

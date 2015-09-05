@@ -10,6 +10,7 @@ let RosterQueueStore = Reflux.createStore({
     this.listenTo(Actions.sendRosterRequest, this.onSendRosterRequest);
     this.listenTo(Actions.authorize, this.onAuthorize);
     this.listenTo(Actions.reject, this.onReject);
+    this.getInitialState();
   },
 
   onConnection (connection) {

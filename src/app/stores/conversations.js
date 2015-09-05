@@ -10,6 +10,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.sendStateChange, this.onSendStateChange);
+    this.getInitialState();
   },
 
   onConnection (connection) {
