@@ -62,7 +62,7 @@ let ConnectionStore = Reflux.createStore({
       }
 
       $this._notify();
-    }, this.jid);
+    }, Strophe.getBareJidFromJid(this.jid));
   },
 
   onRosterReady () {
