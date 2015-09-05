@@ -3,7 +3,6 @@ var path = require('path');
 var buildPath = path.resolve(__dirname, 'build');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var TransferWebpackPlugin = require('transfer-webpack-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 var config = {
   //Entry points to the project
@@ -38,11 +37,7 @@ var config = {
     //Moves files
     new TransferWebpackPlugin([
       {from: 'www'}
-    ], path.resolve(__dirname, "src")),
-
-    new ExtractTextPlugin('style.css', {
-      allChunks: true
-    })
+    ], path.resolve(__dirname, "src"))
   ],
   module: {
     //Loaders to interpret non-vanilla javascript code as well as most other extensions including images and text.
@@ -65,7 +60,7 @@ var config = {
 
       {
         test: /\.scss$/,
-        loader: ExtractTextPlugin.extract("css!sass")
+        loader: "style!css!sass"
       },
 
       {

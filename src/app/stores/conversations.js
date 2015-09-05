@@ -10,6 +10,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.sendStateChange, this.onSendStateChange);
+    this.listenTo(Actions.sendSticker, this.onSendSticker);
     this.listenTo(Actions.logout, this.onLogout);
     this.getInitialState();
   },
@@ -19,6 +20,8 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onMessageReceived (stanza) {
+    // console.log(stanza);
+
     if (stanza.querySelectorAll('forwarded').length > 0) {
       // XEP-0280: Message Carbons
       stanza = stanza.querySelector('forwarded message');
@@ -35,7 +38,7 @@ let ConversationsStore = Reflux.createStore({
       threadJID = toJID;
     }
 
-    if (stanza.querySelectorAll('body').length === 0) {
+    if (stanza.querySelectorAll('body, sticker').length === 0) {
       // Chat State Notification
       let states = stanza.querySelectorAll('active, composing, inactive, paused, gone');
 
@@ -46,7 +49,17 @@ let ConversationsStore = Reflux.createStore({
       return;
     }
 
-    let body      = stanza.querySelector('body').textContent;
+    let body;
+    let type;
+
+    if (stanza.querySelectorAll('sticker').length > 0) {
+      body = stanza.querySelector('sticker').getAttribute('url');
+      type = 'sticker';
+    } else {
+      body = stanza.querySelector('body').textContent;
+      type = 'text';
+    }
+
     let timestamp = moment().format();
 
     if (stanza.querySelectorAll('delay').length > 0) {
@@ -58,6 +71,7 @@ let ConversationsStore = Reflux.createStore({
         from: fromJID,
         body: body,
         time: timestamp,
+        type: type,
       }));
     });
 
@@ -83,6 +97,7 @@ let ConversationsStore = Reflux.createStore({
         from: Strophe.getBareJidFromJid(sender),
         body: body,
         time: moment().format(),
+        type: 'text',
       }));
     });
 
@@ -102,6 +117,33 @@ let ConversationsStore = Reflux.createStore({
     }).up();
 
     this.connection.send(stanza);
+  },
+
+  onSendSticker (jid, stickerUrl) {
+    let sender = this.connection.jid;
+
+    let stanza = $msg({
+      from: sender,
+      to:   jid,
+      type: 'chat',
+    }).c('sticker', {
+      xmlns: Strophe.NS.STICKERS,
+      url:   stickerUrl,
+    }).up();
+
+    this.connection.send(stanza);
+
+    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
+      return val.push(Immutable.Map({
+        from: Strophe.getBareJidFromJid(sender),
+        body: stickerUrl,
+        time: moment().format(),
+        type: 'sticker',
+      }));
+    });
+
+    this.trigger(this.messages);
+    this._persist();
   },
 
   onLogout () {

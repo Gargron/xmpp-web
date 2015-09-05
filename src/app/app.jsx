@@ -8,6 +8,7 @@
 
   Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
   Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+  Strophe.addNamespace('STICKERS', 'http://jabber.zeonfederated.com/protocol/stickers');
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');

@@ -15,8 +15,9 @@ let IconButton   = mui.IconButton;
 let DropDownIcon = mui.DropDownIcon;
 let Colors       = mui.Styles.Colors;
 
-let MessageForm  = require('./message_form');
-let MessagesList = require('./messages_list');
+let MessageForm   = require('./message_form');
+let MessagesList  = require('./messages_list');
+let StickerPicker = require('./sticker_picker');
 
 let ConversationView = React.createClass({
   mixins: [
@@ -91,6 +92,7 @@ let ConversationView = React.createClass({
           <MessagesList jid={this.props.jid} ownJID={this.props.ownJID} />
 
           <div className="pane-bottom">
+            <StickerPicker jid={this.props.jid} />
             <MessageForm jid={this.props.jid} />
           </div>
         </div>

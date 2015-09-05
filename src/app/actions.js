@@ -30,6 +30,8 @@ let Actions = Reflux.createActions([
   'openEditProfileDialog',
   'updateProfile',
   'profileUpdateReceived',
+
+  'sendSticker',
 ]);
 
 module.exports = Actions;

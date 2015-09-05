@@ -6,6 +6,7 @@ let ConversationsStore = require('../stores/conversations');
 let utils              = require('../utils');
 
 let Message = require('./message');
+let Sticker = require('./sticker');
 
 let MessagesList = React.createClass({
   mixins: [
@@ -30,16 +31,23 @@ let MessagesList = React.createClass({
 
     let messages = this.state.items.map(function (m, i, iter) {
       let prev = iter.get(i - 1, null);
+      let tag;
+
+      if (m.get('type', 'text') === 'text') {
+        tag = <Message key={i} message={m} ownJID={ownJID} />;
+      } else if (m.get('type', 'text') === 'sticker') {
+        tag = <Sticker key={i} message={m} ownJID={ownJID} />;
+      }
 
       if (i - 1 === -1 || (prev != null && utils.daysDiffer(m, prev))) {
         return (
           <div key={i}>
             <div className="messages__header">{moment(m.get('time')).format('DD.MM.YYYY')}</div>
-            <Message message={m} ownJID={ownJID} />
+            {tag}
           </div>
         );
       } else {
-        return <Message key={i} message={m} ownJID={ownJID} />;
+        return tag;
       }
     });
 
