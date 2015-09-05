@@ -1,7 +1,7 @@
 let React           = require('react');
 let mui             = require('material-ui');
 let Reflux          = require('reflux');
-let ConnectionStore = require('../stores/connection');
+let AccountStore    = require('../stores/account');
 let Actions         = require('../actions');
 let utils           = require('../utils');
 
@@ -32,14 +32,14 @@ let resizeImage = function (img, type) {
 
 let EditProfileDialog = React.createClass({
   mixins: [
-    Reflux.connect(ConnectionStore, 'connection'),
+    Reflux.connect(AccountStore, 'account'),
     Reflux.listenTo(Actions.openEditProfileDialog, 'onOpenEditProfileDialog'),
   ],
 
   onOpenEditProfileDialog () {
     this.setState({
-      nickname: this.state.connection.account.get('nickname'),
-      photo:    this.state.connection.account.get('photo'),
+      nickname: this.state.account.get('nickname'),
+      photo:    this.state.account.get('photo'),
     });
 
     this.refs.dialog.show();

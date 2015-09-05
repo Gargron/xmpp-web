@@ -6,6 +6,9 @@
   require('script!./vendor/sha1.js');
   require('script!./vendor/lib-typedarrays.js');
 
+  Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
+  Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
+
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
   let Main    = require('./components/main');

@@ -11,8 +11,6 @@ let ConnectionStore = Reflux.createStore({
     this.listenTo(Actions.login, this.onLogin);
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.connection, this.onConnection);
-    this.listenTo(Actions.updateProfile, this.onUpdateProfile);
-    this.listenTo(Actions.rosterReady, this.onRosterReady);
     this.getInitialState();
   },
 
@@ -50,51 +48,17 @@ let ConnectionStore = Reflux.createStore({
   },
 
   onConnection () {
-    let $this = this;
-
-    this.connection.vcard.get(function (stanza) {
-      if (stanza.querySelectorAll('NICKNAME').length > 0) {
-        $this.account = $this.account.set('nickname', stanza.querySelector('NICKNAME').textContent);
-      }
-
-      if (stanza.querySelectorAll('PHOTO').length > 0) {
-        $this.account = $this.account.set('photo', 'data:' + stanza.querySelector('PHOTO TYPE').textContent + ';base64,' + stanza.querySelector('PHOTO BINVAL').textContent);
-      }
-
-      $this._notify();
-    }, Strophe.getBareJidFromJid(this.jid));
+    this._enableCarbons();
   },
 
-  onRosterReady () {
-    this._announcePresence();
-  },
-
-  onUpdateProfile (nickname, photo) {
-    let $this  = this;
-
+  _enableCarbons () {
     let stanza = $iq({
+      from: this.connection.jid,
+      id:   'enable_carbons',
       type: 'set',
-      jid:  this.jid,
-    }).c('vCard', { xmlns: Strophe.NS.VCARD });
+    }).c('enable', { xmlns: Strophe.NS.CARBONS }).up();
 
-    if (nickname.length > 0) {
-      stanza = stanza.c('NICKNAME').t(nickname).up();
-    }
-
-    if (photo.length > 0) {
-      let fileType = photo.split(';')[0].split(':')[1];
-      let fileBlob = photo.split(',')[1];
-
-      stanza.c('PHOTO').c('TYPE').t(fileType).up().c('BINVAL').t(fileBlob).up().up();
-    }
-
-    this.connection.sendIQ(stanza, function () {
-      $this.account = $this.account.set('nickname', nickname);
-      $this.account = $this.account.set('photo', photo);
-
-      $this._notify();
-      $this._announceUpdatedPhoto(photo);
-    });
+    this.connection.send(stanza);
   },
 
   getInitialState () {
@@ -112,14 +76,6 @@ let ConnectionStore = Reflux.createStore({
 
     this._load();
 
-    if (typeof this.account === 'undefined') {
-      this.account = Immutable.Map({
-        nickname: '',
-        photo:    '',
-        status:   'Online in XMPP Web',
-      });
-    }
-
     if (typeof this.connection === 'undefined') {
       this.connection = null;
 
@@ -133,7 +89,6 @@ let ConnectionStore = Reflux.createStore({
       jid:        this.jid,
       password:   this.password,
       connection: this.connection,
-      account:    this.account,
     };
   },
 
@@ -143,7 +98,6 @@ let ConnectionStore = Reflux.createStore({
       jid:        this.jid,
       password:   this.password,
       connection: this.connection,
-      account:    this.account,
     });
   },
 
@@ -176,6 +130,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
     this.connection.disco.addFeature(Strophe.NS.BOSH);
     this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+    this.connection.disco.addFeature(Strophe.NS.CARBONS);
 
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
       console.log('Connection status', status, errorCode);
@@ -215,24 +170,6 @@ let ConnectionStore = Reflux.createStore({
 
       return true;
     }, null, 'presence', null, null, null);
-  },
-
-  _announceUpdatedPhoto (dataURL) {
-    let stanza = $pres().c('x', { xmlns: 'vcard-temp:x:update' })
-
-    if (dataURL === '') {
-      stanza = stanza.c('photo').up();
-    } else {
-      let sha1sum = utils.imageToSha1(dataURL);
-      stanza = stanza.c('photo').t(sha1sum).up().up();
-    }
-
-    this.connection.send(stanza);
-  },
-
-  _announcePresence () {
-    let stanza = $pres().c('status').t(this.account.get('status')).up().c('priority').t('40').up();
-    this.connection.send(stanza);
   },
 
 });
