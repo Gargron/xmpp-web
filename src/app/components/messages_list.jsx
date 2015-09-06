@@ -23,7 +23,7 @@ let MessagesList = React.createClass({
 
   componentDidUpdate () {
     let node = React.findDOMNode(this);
-    node.scrollTop = node.scrollTopMax;
+    node.scrollTop = node.scrollHeight;
   },
 
   render () {
