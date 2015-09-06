@@ -3,7 +3,7 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let utils     = require('../utils');
 
-const BOSH_URL = 'http://web.zeonfed.org/http-bind';
+const BOSH_URL = 'https://zeonfed.org/http-bind';
 
 let ConnectionStore = Reflux.createStore({
 
