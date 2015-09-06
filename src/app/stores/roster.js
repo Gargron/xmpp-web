@@ -13,6 +13,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
+    this.listenTo(Actions.sendSticker, this.onSendSticker);
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
     this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
@@ -35,9 +36,10 @@ let RosterStore = Reflux.createStore({
   },
 
   onRemoveFromRoster (jid) {
-    this.connection.roster.unauthorize(jid);
-    this.connection.roster.unsubscribe(jid);
+    // console.log('Removing from roster: ' + jid);
+
     this.connection.roster.remove(jid);
+    this.connection.roster.unsubscribe(jid);
   },
 
   onRosterStateChange (jid, newState) {
@@ -59,7 +61,7 @@ let RosterStore = Reflux.createStore({
   },
 
   onMessageReceived (stanza) {
-    if (stanza.querySelectorAll('body').length === 0) {
+    if (stanza.querySelectorAll('body, sticker').length === 0) {
       return;
     }
 
@@ -84,7 +86,15 @@ let RosterStore = Reflux.createStore({
     this.trigger(this.roster);
   },
 
-  onSendMessage (jid, body) {
+  onSendMessage (jid) {
+    this._touch(jid);
+  },
+
+  onSendSticker (jid) {
+    this._touch(jid);
+  },
+
+  _touch (jid) {
     let itemIndex = this.roster.findIndex(function (val) {
       return val.get('jid') === jid;
     });

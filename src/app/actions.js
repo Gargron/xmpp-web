@@ -4,6 +4,7 @@ let Actions = Reflux.createActions([
   'login',
   'loginFailed',
   'logout',
+  'leave',
 
   'connection',
   'connectionLost',
@@ -19,6 +20,7 @@ let Actions = Reflux.createActions([
   'authorize',
   'reject',
   'removeFromRoster',
+  'ackSubscribe',
 
   'openChat',
   'closeChat',

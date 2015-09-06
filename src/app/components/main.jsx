@@ -70,7 +70,7 @@ let Main = React.createClass({
   },
 
   onMessageReceived (stanza) {
-    if (stanza.querySelectorAll('body').length === 0) {
+    if (stanza.querySelectorAll('body, sticker').length === 0) {
       return;
     }
 

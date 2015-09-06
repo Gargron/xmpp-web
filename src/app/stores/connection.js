@@ -35,6 +35,7 @@ let ConnectionStore = Reflux.createStore({
 
   onLogout () {
     if (this.connection != null) {
+      Actions.leave();
       this.connection.disconnect();
     }
 
@@ -132,8 +133,44 @@ let ConnectionStore = Reflux.createStore({
     this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
     this.connection.disco.addFeature(Strophe.NS.CARBONS);
 
+    // The Strophe roster plugin handles roster changes, but we get notified
+    this.connection.roster.registerCallback(function (items, item, previousItem) {
+      Actions.rosterChange(items);
+    });
+
+    // Handle incoming messages
+    this.connection.addHandler(function (message) {
+      Actions.messageReceived(message);
+      return true;
+    }, null, 'message', 'chat');
+
+    // Handler for presence stanzas that pass by Strophe plugins
+    this.connection.addHandler(function (stanza) {
+      // console.log(1, stanza);
+
+      let from = stanza.getAttribute('from');
+      let jid  = Strophe.getBareJidFromJid(from);
+      let type = stanza.getAttribute('type');
+
+      if (type === 'subscribe') {
+        Actions.rosterRequestReceived(jid);
+      } else if (type === 'subscribed') {
+        Actions.ackSubscribe(jid);
+      } else if (type === 'unsubscribed') {
+        Actions.removeFromRoster(jid);
+      } else {
+        let x = stanza.querySelector('x');
+
+        if (x != null && x.getAttribute('xmlns') === Strophe.NS.VCARD_UPDATES) {
+          Actions.profileUpdateReceived(stanza);
+        }
+      }
+
+      return true;
+    }, null, 'presence', null, null, null);
+
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
-      console.log('Connection status', status, errorCode);
+      // console.log('Connection status', status, errorCode);
 
       if (status === Strophe.Status.CONNECTED) {
         Actions.connection($this.connection);
@@ -145,31 +182,6 @@ let ConnectionStore = Reflux.createStore({
         console.log('Error', errorCode);
       }
     });
-
-    this.connection.roster.registerCallback(function (items, item, previousItem) {
-      Actions.rosterChange(items);
-    });
-
-    this.connection.addHandler(function (message) {
-      Actions.messageReceived(message);
-      return true;
-    }, null, 'message', 'chat');
-
-    this.connection.addHandler(function (stanza) {
-      let jid  = stanza.getAttribute('from');
-      let from = Strophe.getBareJidFromJid(jid);
-      let type = stanza.getAttribute('type');
-
-      if (type === 'subscribe') {
-        Actions.rosterRequestReceived(from);
-      }
-
-      if (stanza.querySelectorAll('x').length > 0) {
-        Actions.profileUpdateReceived(stanza);
-      }
-
-      return true;
-    }, null, 'presence', null, null, null);
   },
 
 });

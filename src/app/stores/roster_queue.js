@@ -1,6 +1,7 @@
-let Reflux    = require('reflux');
-let Actions   = require('../actions.js');
-let Immutable = require('immutable');
+let Reflux      = require('reflux');
+let Actions     = require('../actions.js');
+let Immutable   = require('immutable');
+let RosterStore = require('./roster');
 
 let RosterQueueStore = Reflux.createStore({
 
@@ -18,19 +19,30 @@ let RosterQueueStore = Reflux.createStore({
   },
 
   onRosterRequestReceived (jid) {
-    if (!this.queue.includes(jid)) {
+    let haveInContacts = RosterStore.getInitialState().findIndex(function (val) {
+      return val.get('jid') === jid;
+    });
+
+    if (haveInContacts === -1) {
+      console.log('Roster request received, do not have in contacts');
       this.queue = this.queue.push(jid);
       this.trigger(this.queue);
     } else {
+      console.log('Roster request received, have in contacts, authorizing automatically');
       Actions.authorize(jid);
     }
   },
 
   onSendRosterRequest (jid) {
+    console.log('Sending roster request to ' + jid);
+
+    this.connection.roster.add(jid, "", []);
     this.connection.roster.subscribe(jid);
   },
 
   onAuthorize (jid) {
+    console.log('Authorizing ' + jid);
+
     this.connection.roster.authorize(jid);
     this.connection.roster.subscribe(jid);
 
@@ -39,6 +51,7 @@ let RosterQueueStore = Reflux.createStore({
   },
 
   onReject (jid) {
+    console.log('Rejecting ' + jid);
     this.connection.roster.unauthorize(jid);
 
     this.queue = this.queue.delete(this.queue.indexOf(jid));

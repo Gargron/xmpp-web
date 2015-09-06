@@ -55,6 +55,7 @@ let MessageForm = React.createClass({
       if (!newTyping) {
         newTyping = true;
         Actions.sendStateChange(this.props.jid, 'composing');
+        Actions.resetUnreadCounter(this.props.jid);
       }
 
       newIdleSeconds = 0;

@@ -9,6 +9,8 @@ let AccountStore = Reflux.createStore({
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.updateProfile, this.onUpdateProfile);
     this.listenTo(Actions.rosterReady, this.onRosterReady);
+    this.listenTo(Actions.leave, this.onLeave);
+    this.listenTo(Actions.ackSubscribe, this.onAckSubscribe);
     this.getInitialState();
   },
 
@@ -59,7 +61,13 @@ let AccountStore = Reflux.createStore({
   },
 
   onRosterReady () {
-    this._announcePresence();
+    this.connection.send(this._buildPresence($pres()));
+  },
+
+  onLeave () {
+    this.connection.send(this._buildPresence($pres({
+      type: 'unavailable',
+    })));
   },
 
   getInitialState () {
@@ -67,15 +75,26 @@ let AccountStore = Reflux.createStore({
       this.account = Immutable.Map({
         nickname: '',
         photo:    '',
-        status:   '',
+        status:   'Online in XMPP Web',
       });
     }
 
     return this.account;
   },
 
+  onAckSubscribe (jid) {
+    console.log('Acknowledging subscription from ' + jid);
+
+    this.connection.send(this._buildPresence($pres({
+      type: 'subscribe',
+      to:   jid,
+    })));
+  },
+
   _announceUpdatedPhoto (dataURL) {
-    let stanza = $pres().c('x', { xmlns: 'vcard-temp:x:update' })
+    let stanza = this._buildPresence($pres());
+
+    stanza = stanza.c('x', { xmlns: Strophe.NS.VCARD_UPDATES });
 
     if (dataURL === '') {
       stanza = stanza.c('photo').up();
@@ -87,9 +106,10 @@ let AccountStore = Reflux.createStore({
     this.connection.send(stanza);
   },
 
-  _announcePresence () {
-    let stanza = $pres().c('status').t(this.account.get('status')).up().c('priority').t('40').up();
-    this.connection.send(stanza);
+  _buildPresence (root) {
+    root = root.c('status').t(this.account.get('status')).up();
+    root = root.c('priority').t('1').up();
+    return root;
   },
 
 });

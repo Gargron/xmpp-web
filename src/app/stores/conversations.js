@@ -53,7 +53,7 @@ let ConversationsStore = Reflux.createStore({
     let type;
 
     if (stanza.querySelectorAll('sticker').length > 0) {
-      body = stanza.querySelector('sticker').getAttribute('url');
+      body = stanza.querySelector('sticker').getAttribute('uid');
       type = 'sticker';
     } else {
       body = stanza.querySelector('body').textContent;
@@ -119,8 +119,9 @@ let ConversationsStore = Reflux.createStore({
     this.connection.send(stanza);
   },
 
-  onSendSticker (jid, stickerUrl) {
+  onSendSticker (jid, sticker) {
     let sender = this.connection.jid;
+    let uid    = [sticker.org, sticker.pack, sticker.id].join('.');
 
     let stanza = $msg({
       from: sender,
@@ -128,7 +129,7 @@ let ConversationsStore = Reflux.createStore({
       type: 'chat',
     }).c('sticker', {
       xmlns: Strophe.NS.STICKERS,
-      url:   stickerUrl,
+      uid:   uid,
     }).up();
 
     this.connection.send(stanza);
@@ -136,7 +137,7 @@ let ConversationsStore = Reflux.createStore({
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
         from: Strophe.getBareJidFromJid(sender),
-        body: stickerUrl,
+        body: uid,
         time: moment().format(),
         type: 'sticker',
       }));

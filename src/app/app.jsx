@@ -6,9 +6,10 @@
   require('script!./vendor/sha1.js');
   require('script!./vendor/lib-typedarrays.js');
 
-  Strophe.addNamespace('CARBONS', 'urn:xmpp:carbons:2');
-  Strophe.addNamespace('CHATSTATES', 'http://jabber.org/protocol/chatstates');
-  Strophe.addNamespace('STICKERS', 'http://jabber.zeonfederated.com/protocol/stickers');
+  Strophe.addNamespace('CARBONS',       'urn:xmpp:carbons:2');
+  Strophe.addNamespace('CHATSTATES',    'http://jabber.org/protocol/chatstates');
+  Strophe.addNamespace('STICKERS',      'http://jabber.zeonfederated.com/protocol/stickers');
+  Strophe.addNamespace('VCARD_UPDATES', 'vcard-temp:x:update');
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
@@ -31,4 +32,8 @@
   // For more details see: https://facebook.github.io/react/docs/top-level-api.html#react.render
   React.render(<Main />, document.body);
 
+  // Try to communicate a proper disconnect before page closes
+  window.onbeforeunload = function (e) {
+    Actions.leave();
+  };
 })();

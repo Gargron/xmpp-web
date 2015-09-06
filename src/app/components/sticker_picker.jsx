@@ -10,13 +10,16 @@ let Colors     = mui.Styles.Colors;
 let StickerItem = React.createClass({
 
   handleClick (e) {
-    Actions.sendSticker(this.props.jid, this.props.url);
+    Actions.sendSticker(this.props.jid, this.props.sticker);
   },
 
   render () {
+    let sticker = this.props.sticker;
+    let url     = '/images/stickers/' + sticker.org + '/' + sticker.pack + '/' + sticker.id + '.png';
+
     return (
       <button onClick={this.handleClick} className="sticker-thumbnail">
-        <img src={this.props.url} />
+        <img src={url} />
       </button>
     );
   },
@@ -27,20 +30,18 @@ let StickerPickerPopout = React.createClass({
 
   render () {
     let stickers = [
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-      '/images/stickers/test.png',
-    ].map(function (item, i) {
-      return <StickerItem key={i} url={item} jid={this.props.jid} />;
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+      { id: 'aikatsu', pack: 'misc', org: 'walfas' },
+    ].map(function (sticker, i) {
+      return <StickerItem key={i} sticker={sticker} jid={this.props.jid} />;
     }, this);
 
     return (

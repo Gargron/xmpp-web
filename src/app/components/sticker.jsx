@@ -10,11 +10,14 @@ let Sticker = React.createClass({
       classes.push("belongs-to-self");
     }
 
+    let uid = this.props.message.get('body');
+    let url = '/images/stickers/' + uid.split('.').join('/') + '.png';
+
     return (
       <div className={classes.join(" ")}>
         <div className="sticker">
           <div className="sticker__image">
-            <img src={this.props.message.get('body')} />
+            <img src={url} />
           </div>
 
           <div className="sticker__time">{moment(this.props.message.get('time')).format('HH:mm')}</div>

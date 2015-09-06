@@ -17,6 +17,7 @@
 - Some form of infinite scrolling
 - Persist roster in localStorage
 - Desktop notifications
+- Chrome compatibility (weird flexbox behaviour, MessageForm)
 
 ## Nice to haves but probably far off
 
