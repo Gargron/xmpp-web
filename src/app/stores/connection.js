@@ -56,6 +56,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
     this.connection.disco.addFeature(Strophe.NS.CARBONS);
     this.connection.disco.addFeature(Strophe.NS.VERSION);
+    this.connection.disco.addFeature(Strophe.NS.LAST_ACTIVITY);
 
     window.connection = this.connection;
 
@@ -182,6 +183,17 @@ let ConnectionStore = Reflux.createStore({
           from: stanza.getAttribute('to'),
           id:   stanza.getAttribute('id'),
         }).c('query', { xmlns: Strophe.NS.VERSION }).c('name').t('XMPP Web').up().up();
+
+        $this.connection.send(res);
+      }
+
+      if (query != null && query.getAttribute('xmlns') === Strophe.NS.LAST_ACTIVITY) {
+        let res = $iq({
+          type: 'result',
+          to:   stanza.getAttribute('from'),
+          from: stanza.getAttribute('to'),
+          id:   stanza.getAttribute('id'),
+        }).c('query', { xmlns: Strophe.NS.LAST_ACTIVITY, seconds: 0 }).up();
 
         $this.connection.send(res);
       }

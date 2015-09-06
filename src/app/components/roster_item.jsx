@@ -15,26 +15,35 @@ let RosterItem = React.createClass({
     let user   = utils.userDisplayData(this.props.user);
     let avatar = <Avatar backgroundColor={Colors.teal500}>{user.initial}</Avatar>;
     let status = user.status;
+    let unread = '';
+    let online = '';
 
     if (user.photo !== '') {
       avatar = <Avatar src={user.photo} />;
     }
 
     if (this.props.user.get('unread') > 0) {
-      avatar = (
-        <div className='unread-counter'>
-          {avatar}
-          <div className='unread-counter__inner'>{this.props.user.get('unread')}</div>
-        </div>
-      );
+      unread = <div className='unread-counter'>{this.props.user.get('unread')}</div>;
     }
 
     if (status === '') {
       status = 'Online';
     }
 
+    if (this.props.user.get('resources').size > 0) {
+      online = <div className="online-indicator" />;
+    }
+
+    let avatarContainer = (
+      <div className="avatar-container">
+        {unread}
+        {avatar}
+        {online}
+      </div>
+    );
+
     return (
-      <ListItem leftAvatar={avatar} primaryText={user.name} secondaryText={<span dangerouslySetInnerHTML={{__html: status}} />} onClick={Actions.openChat.bind(this, user.jid)}/>
+      <ListItem leftAvatar={avatarContainer} primaryText={user.name} secondaryText={<span dangerouslySetInnerHTML={{__html: status}} />} onClick={Actions.openChat.bind(this, user.jid)}/>
     );
   },
 

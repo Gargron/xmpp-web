@@ -136,11 +136,12 @@ let RosterStore = Reflux.createStore({
 
   _updateRoster (newItems) {
     let vcardQueue = [];
+    let lastSeenQueue = [];
     let $this = this;
 
     // console.log('New items', newItems);
 
-    this.roster = Immutable.List(newItems).map(function (item, index) {
+    let intermediate = Immutable.List(newItems).map(function (item, index) {
       item = Immutable.fromJS(item);
 
       let oldItem = $this.roster.find(function (val) {
@@ -158,9 +159,11 @@ let RosterStore = Reflux.createStore({
 
           unread: 0,
           last_activity: null,
+          last_seen: null,
         });
 
         vcardQueue.push([item, index]);
+        lastSeenQueue.push([item, index]);
 
         return item;
       }
@@ -169,6 +172,8 @@ let RosterStore = Reflux.createStore({
 
       return oldItem.merge(item);
     });
+
+    this.roster = intermediate;
 
     vcardQueue.forEach(function (queueItem) {
       let item        = queueItem[0];
@@ -183,6 +188,30 @@ let RosterStore = Reflux.createStore({
 
         $this.trigger($this.roster);
       }, item.get('jid'));
+    });
+
+    lastSeenQueue.forEach(function (queueItem) {
+      let item        = queueItem[0];
+      let updateIndex = queueItem[1];
+
+      // console.log('Fetching last activity for ' + item.get('jid'));
+
+      $this.connection.sendIQ($iq({
+        type: 'get',
+        to:   item.get('jid'),
+      }).c('query', { xmlns: Strophe.NS.LAST_ACTIVITY }).up(), function (stanza) {
+        let query = stanza.querySelector('query');
+
+        if (query != null) {
+          let seconds = query.getAttribute('seconds');
+
+          $this.roster = $this.roster.update(updateIndex, function (val) {
+            return val.set('last_seen', moment().subtract(seconds, 'seconds').format());
+          });
+        }
+
+        $this.trigger($this.roster);
+      });
     });
 
     this.trigger(this.roster);

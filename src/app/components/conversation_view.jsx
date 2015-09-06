@@ -4,6 +4,7 @@ let Reflux      = require('reflux');
 let RosterStore = require('../stores/roster');
 let Actions     = require('../actions');
 let utils       = require('../utils');
+let moment      = require('moment');
 
 let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
@@ -61,6 +62,10 @@ let ConversationView = React.createClass({
 
       if (user.photo !== '') {
         avatar = <Avatar size={40} src={user.photo} />;
+      }
+
+      if (typeof this.state.partner !== 'undefined' && this.state.partner.get('resources').size === 0 && this.state.partner.get('last_seen') != null) {
+        subtitle = 'Last seen ' + moment(this.state.partner.get('last_seen')).fromNow();
       }
 
       if (user.state === 'composing') {

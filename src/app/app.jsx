@@ -10,6 +10,8 @@
   Strophe.addNamespace('CHATSTATES',    'http://jabber.org/protocol/chatstates');
   Strophe.addNamespace('STICKERS',      'http://jabber.zeonfederated.com/protocol/stickers');
   Strophe.addNamespace('VCARD_UPDATES', 'vcard-temp:x:update');
+  Strophe.addNamespace('REGISTRATION',  'jabber:iq:register');
+  Strophe.addNamespace('LAST_ACTIVITY', 'jabber:iq:last');
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');

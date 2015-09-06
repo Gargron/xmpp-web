@@ -54,6 +54,7 @@ body {
 
   .header {
     border-radius: 4px 0 0 0;
+    flex-shrink: 0;
   }
 
   .messages {
@@ -88,6 +89,7 @@ body {
 
   .pane-bottom {
     border-radius: 0 0 0 4px;
+    flex-shrink: 0;
   }
 }
 
@@ -111,7 +113,7 @@ body {
   height: 100%;
 
   .header {
-    flex: 0 0 auto;
+    flex-shrink: 0;
     border-radius: 0 4px 0 0;
   }
 
@@ -131,10 +133,12 @@ body {
 
   .roster-queue {
     padding-bottom: 0 !important;
+    flex-shrink: 0;
   }
 
   .pane-bottom {
     border-radius: 0 0 4px 0;
+    flex-shrink: 0;
   }
 }
 
@@ -222,6 +226,8 @@ body {
 
   .sticker__image {
     cursor: pointer;
+    width: 128px;
+    height: 128px;
 
     img {
       display: block;
@@ -317,11 +323,13 @@ body {
   }
 }
 
-.unread-counter {
+.avatar-container {
   position: relative;
+  width: 40px;
+  height: 40px;
 }
 
-.unread-counter__inner {
+.unread-counter {
   position: absolute;
   top: -3px;
   left: -3px;
@@ -335,6 +343,16 @@ body {
   background: #f44336;
   color: #fff;
   box-shadow: 2px 1px 0 rgba(0, 0, 0, 0.5);
+}
+
+.online-indicator {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 10px;
+  background: #4caf50;
+  bottom: 1px;
+  right: 2px;
 }
 
 .sticker-picker {

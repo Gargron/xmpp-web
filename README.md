@@ -12,13 +12,15 @@
 - XEP-0085: Chat State Notifications
 - XEP-0280: Message Carbons
 - XEP-0092: Software Version
+- XEP-0012: Last Activity
 
 ## Road map
 
 - Some form of infinite scrolling
 - Persist roster in localStorage
 - Desktop notifications
-- Chrome compatibility (weird flexbox behaviour, MessageForm)
+- XEP-0077: Changing password
+- Favicon
 
 ## Nice to haves but probably far off
 
