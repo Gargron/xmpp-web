@@ -49,6 +49,16 @@ let ConnectionStore = Reflux.createStore({
   },
 
   onConnection () {
+    this.connection.disco.addIdentity('client', 'web', 'XMPP Web');
+    this.connection.disco.addFeature(Strophe.NS.VCARD);
+    this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
+    this.connection.disco.addFeature(Strophe.NS.BOSH);
+    this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
+    this.connection.disco.addFeature(Strophe.NS.CARBONS);
+    this.connection.disco.addFeature(Strophe.NS.VERSION);
+
+    window.connection = this.connection;
+
     this._enableCarbons();
   },
 
@@ -126,13 +136,6 @@ let ConnectionStore = Reflux.createStore({
   _registerConnectionHandlers () {
     let $this = this;
 
-    this.connection.disco.addIdentity('client', 'web', 'XMPP Web');
-    this.connection.disco.addFeature(Strophe.NS.VCARD);
-    this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
-    this.connection.disco.addFeature(Strophe.NS.BOSH);
-    this.connection.disco.addFeature(Strophe.NS.DISCO_INFO);
-    this.connection.disco.addFeature(Strophe.NS.CARBONS);
-
     // The Strophe roster plugin handles roster changes, but we get notified
     this.connection.roster.registerCallback(function (items, item, previousItem) {
       Actions.rosterChange(items);
@@ -168,6 +171,23 @@ let ConnectionStore = Reflux.createStore({
 
       return true;
     }, null, 'presence', null, null, null);
+
+    this.connection.addHandler(function (stanza) {
+      let query = stanza.querySelector('query');
+
+      if (query != null && query.getAttribute('xmlns') === Strophe.NS.VERSION) {
+        let res = $iq({
+          type: 'result',
+          to:   stanza.getAttribute('from'),
+          from: stanza.getAttribute('to'),
+          id:   stanza.getAttribute('id'),
+        }).c('query', { xmlns: Strophe.NS.VERSION }).c('name').t('XMPP Web').up().up();
+
+        $this.connection.send(res);
+      }
+
+      return true;
+    }, null, 'iq', 'get', null, null);
 
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
       // console.log('Connection status', status, errorCode);
