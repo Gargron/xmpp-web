@@ -112,8 +112,8 @@ let Main = React.createClass({
           {content}
 
           <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
-          <Snackbar ref="sbConnectionLost" message="Connection lost" />
-          <Snackbar ref="sbLoginFailed" message="Login failed" action="Correct login details" onActionTouchTap={Actions.logout} />
+          <Snackbar ref="sbConnectionLost" message="Connection lost" autoHideDuration={2000} />
+          <Snackbar ref="sbLoginFailed" message="Login failed" autoHideDuration={2000} />
         </div>
       </DocumentTitle>
     );
