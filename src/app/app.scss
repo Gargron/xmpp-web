@@ -11,6 +11,11 @@ body {
   height: 100%;
   min-width: 780px;
   margin: 0;
+
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .app-loader-placeholder {
@@ -112,6 +117,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 
   .header {
     flex-shrink: 0;
@@ -257,6 +263,10 @@ body {
     line-height: 20px;
     word-wrap: break-word;
     white-space: pre-wrap;
+    -webkit-user-select: all;
+    -moz-user-select: all;
+    -ms-user-select: all;
+    user-select: all;
 
     &:after {
       display: inline;
@@ -452,4 +462,25 @@ body {
       border-top: 11px solid #bbb;
     }
   }
+}
+
+.roster-alert {
+  background: #f44336;
+  color: #ffebee;
+  padding: 10px 16px;
+  overflow: hidden;
+  text-align: center;
+  border-top: 1px solid #b71c1c;
+  border-bottom: 1px solid #fff;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.failure-overlay {
+  position: absolute;
+  width: 100%;
+  height: calc(100% - 56px - 46px);
+  background: rgba(255, 255, 255, 0.5);
+  z-index: 100;
+  border-radius: 0 0 6px 0;
 }

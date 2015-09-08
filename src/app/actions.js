@@ -28,6 +28,7 @@ let Actions = Reflux.createActions([
   'messageReceived',
   'sendMessage',
   'sendStateChange',
+  'loadArchive',
 
   'openEditProfileDialog',
   'updateProfile',

@@ -150,8 +150,6 @@ let ConnectionStore = Reflux.createStore({
 
     // Handler for presence stanzas that pass by Strophe plugins
     this.connection.addHandler(function (stanza) {
-      // console.log(1, stanza);
-
       let from = stanza.getAttribute('from');
       let jid  = Strophe.getBareJidFromJid(from);
       let type = stanza.getAttribute('type');
@@ -204,7 +202,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
       // console.log('Connection status', status, errorCode);
 
-      if (status === Strophe.Status.CONNECTED) {
+      if (status === Strophe.Status.CONNECTED || status === Strophe.Status.ATTACHED) {
         Actions.connection($this.connection);
       } else if (status === Strophe.Status.DISCONNECTED) {
         Actions.connectionLost();

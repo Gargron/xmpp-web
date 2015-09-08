@@ -4,6 +4,7 @@ let Reflux             = require('reflux');
 let moment             = require('moment');
 let ConversationsStore = require('../stores/conversations');
 let utils              = require('../utils');
+let Actions            = require('../actions.js');
 
 let Message = require('./message');
 let Sticker = require('./sticker');
@@ -21,7 +22,16 @@ let MessagesList = React.createClass({
     });
   },
 
+  componentWillUpdate () {
+    let node = React.findDOMNode(this);
+    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+  },
+
   componentDidUpdate () {
+    if (!this.shouldScrollBottom) {
+      return;
+    }
+
     let node = React.findDOMNode(this);
     node.scrollTop = node.scrollHeight;
   },

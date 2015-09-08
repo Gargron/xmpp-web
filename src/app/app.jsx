@@ -3,6 +3,8 @@
   require('script!strophejs-plugins/roster/strophe.roster.js');
   require('script!strophejs-plugins/disco/strophe.disco.js');
   require('script!strophejs-plugins/vcard/strophe.vcard.js');
+  require('script!strophejs-plugins/rsm/strophe.rsm.js');
+  // require('script!strophejs-plugins/mam/strophe.mam.v0.3.js');
   require('script!./vendor/sha1.js');
   require('script!./vendor/lib-typedarrays.js');
 
