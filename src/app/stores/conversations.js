@@ -10,7 +10,6 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.sendStateChange, this.onSendStateChange);
-    this.listenTo(Actions.sendSticker, this.onSendSticker);
     this.listenTo(Actions.logout, this.onLogout);
     this.getInitialState();
   },
@@ -79,16 +78,27 @@ let ConversationsStore = Reflux.createStore({
     this._persist();
   },
 
-  onSendMessage (jid, body) {
+  onSendMessage (jid, body, type) {
     let sender = this.connection.jid;
 
     let stanza = $msg({
       from: sender,
       to:   jid,
       type: 'chat',
-    }).c('body').t(body).up().c('active', {
-      xmlns: Strophe.NS.CHATSTATES,
-    }).up();
+    });
+
+    if (type === 'text') {
+      stanza = stanza.c('body').t(body).up().c('active', {
+        xmlns: Strophe.NS.CHATSTATES,
+      }).up();
+    } else if (type === 'sticker') {
+      body = [body.org, body.pack, body.id].join('.');
+
+      stanza = stanza.c('sticker', {
+        xmlns: Strophe.NS.STICKERS,
+        uid:   body,
+      }).up();
+    }
 
     this.connection.send(stanza);
 
@@ -117,34 +127,6 @@ let ConversationsStore = Reflux.createStore({
     }).up();
 
     this.connection.send(stanza);
-  },
-
-  onSendSticker (jid, sticker) {
-    let sender = this.connection.jid;
-    let uid    = [sticker.org, sticker.pack, sticker.id].join('.');
-
-    let stanza = $msg({
-      from: sender,
-      to:   jid,
-      type: 'chat',
-    }).c('sticker', {
-      xmlns: Strophe.NS.STICKERS,
-      uid:   uid,
-    }).up();
-
-    this.connection.send(stanza);
-
-    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
-      return val.push(Immutable.Map({
-        from: Strophe.getBareJidFromJid(sender),
-        body: uid,
-        time: moment().format(),
-        type: 'sticker',
-      }));
-    });
-
-    this.trigger(this.messages);
-    this._persist();
   },
 
   onLogout () {

@@ -11,6 +11,8 @@ let ConnectionStore = Reflux.createStore({
     this.listenTo(Actions.login, this.onLogin);
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.connection, this.onConnection);
+    this.listenTo(Actions.connectionLost, this.onConnectionLost);
+    this.listenTo(Actions.attemptReconnection, this.onAttemptReconnection);
     this.getInitialState();
   },
 
@@ -31,6 +33,7 @@ let ConnectionStore = Reflux.createStore({
     this._persist();
     this._notify();
     this._registerConnectionHandlers();
+    this._connect();
   },
 
   onLogout () {
@@ -49,6 +52,8 @@ let ConnectionStore = Reflux.createStore({
   },
 
   onConnection () {
+    clearTimeout(this.reconnectionTimeout);
+
     this.connection.disco.addIdentity('client', 'web', 'XMPP Web');
     this.connection.disco.addFeature(Strophe.NS.VCARD);
     this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
@@ -61,6 +66,24 @@ let ConnectionStore = Reflux.createStore({
     window.connection = this.connection;
 
     this._enableCarbons();
+  },
+
+  onConnectionLost () {
+    let $this = this;
+
+    this.reconnectionTimeout = setTimeout(function () {
+      Actions.attemptReconnection();
+    }, 5000);
+  },
+
+  onAttemptReconnection () {
+    clearTimeout(this.reconnectionTimeout);
+
+    if (!this.loggedIn) {
+      return;
+    }
+
+    this._connect();
   },
 
   _enableCarbons () {
@@ -198,6 +221,10 @@ let ConnectionStore = Reflux.createStore({
 
       return true;
     }, null, 'iq', 'get', null, null);
+  },
+
+  _connect () {
+    let $this = this;
 
     this.connection.connect(this.jid, this.password, function (status, errorCode) {
       // console.log('Connection status', status, errorCode);

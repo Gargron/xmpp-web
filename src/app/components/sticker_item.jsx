@@ -4,7 +4,7 @@ let Actions = require('../actions');
 let StickerItem = React.createClass({
 
   handleClick (e) {
-    Actions.sendSticker(this.props.jid, this.props.sticker);
+    Actions.sendMessage(this.props.jid, this.props.sticker, 'sticker');
   },
 
   render () {

@@ -8,6 +8,7 @@ let Actions = Reflux.createActions([
 
   'connection',
   'connectionLost',
+  'attemptReconnection',
 
   'rosterChange',
   'rosterRequestReceived',
@@ -33,8 +34,6 @@ let Actions = Reflux.createActions([
   'openEditProfileDialog',
   'updateProfile',
   'profileUpdateReceived',
-
-  'sendSticker',
 ]);
 
 module.exports = Actions;

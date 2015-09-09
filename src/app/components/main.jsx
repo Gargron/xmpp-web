@@ -20,6 +20,7 @@ let Main = React.createClass({
     Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
     Reflux.listenTo(Actions.loginFailed, "onLoginFailed"),
     Reflux.listenTo(Actions.messageReceived, "onMessageReceived"),
+    Reflux.listenTo(Actions.attemptReconnection, "onAttemptReconnection"),
   ],
 
   childContextTypes: {
@@ -95,6 +96,10 @@ let Main = React.createClass({
     this.refs.sbLoginFailed.show();
   },
 
+  onAttemptReconnection () {
+    this.refs.sbReconnecting.show();
+  },
+
   render () {
     let content;
 
@@ -114,6 +119,7 @@ let Main = React.createClass({
           <Snackbar ref="sbConnectionEstablished" message="Connection established" autoHideDuration={2000} />
           <Snackbar ref="sbConnectionLost" message="Connection lost" autoHideDuration={2000} />
           <Snackbar ref="sbLoginFailed" message="Login failed" autoHideDuration={2000} />
+          <Snackbar ref="sbReconnecting" message="Trying to re-establish connection" autoHideDuration={2000} />
         </div>
       </DocumentTitle>
     );

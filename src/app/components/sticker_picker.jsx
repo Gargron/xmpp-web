@@ -12,7 +12,7 @@ let StickerPickerPopout = require('./sticker_picker_popout');
 let StickerPicker = React.createClass({
   mixins: [
     mui.Mixins.ClickAwayable,
-    Reflux.listenTo(Actions.sendSticker, 'onSendSticker'),
+    Reflux.listenTo(Actions.sendMessage, 'onSendMessage'),
   ],
 
   getInitialState () {
@@ -27,7 +27,11 @@ let StickerPicker = React.createClass({
     });
   },
 
-  onSendSticker () {
+  onSendMessage (jid, body, type) {
+    if (type !== 'sticker') {
+      return;
+    }
+
     this.setState({
       open: false,
     });

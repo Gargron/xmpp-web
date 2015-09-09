@@ -13,7 +13,6 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.removeFromRoster, this.onRemoveFromRoster);
     this.listenTo(Actions.messageReceived, this.onMessageReceived);
     this.listenTo(Actions.sendMessage, this.onSendMessage);
-    this.listenTo(Actions.sendSticker, this.onSendSticker);
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
     this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
@@ -87,10 +86,6 @@ let RosterStore = Reflux.createStore({
   },
 
   onSendMessage (jid) {
-    this._touch(jid);
-  },
-
-  onSendSticker (jid) {
     this._touch(jid);
   },
 
