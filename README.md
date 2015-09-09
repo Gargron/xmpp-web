@@ -24,8 +24,8 @@ The client is live on <https://zeonfed.org>.
 - Favicon
 - XEP-0077: Changing password
 - XEP-0045: Multi-User Chat
+- XEP-0333: Chat Markers
 - Improve UI in the event of a lost connection
-- Add reconnecting functionality
 
 ## Nice to haves but probably far off
 

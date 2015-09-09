@@ -14,6 +14,7 @@
   Strophe.addNamespace('VCARD_UPDATES', 'vcard-temp:x:update');
   Strophe.addNamespace('REGISTRATION',  'jabber:iq:register');
   Strophe.addNamespace('LAST_ACTIVITY', 'jabber:iq:last');
+  Strophe.addNamespace('CHAT_MARKERS',  'urn:xmpp:chat-markers:0');
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');
