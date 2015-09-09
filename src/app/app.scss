@@ -263,10 +263,11 @@ body {
     line-height: 20px;
     word-wrap: break-word;
     white-space: pre-wrap;
-    -webkit-user-select: all;
-    -moz-user-select: all;
-    -ms-user-select: all;
-    user-select: all;
+
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
 
     &:after {
       display: inline;

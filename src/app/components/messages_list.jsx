@@ -24,11 +24,11 @@ let MessagesList = React.createClass({
 
   componentWillUpdate () {
     let node = React.findDOMNode(this);
-    this.shouldScrollBottom = node.scrollTop + node.offsetHeight === node.scrollHeight;
+    this.shouldScrollBottom =  node.scrollHeight - node.scrollTop === node.clientHeight;
   },
 
   componentDidUpdate () {
-    if (!this.shouldScrollBottom) {
+    if (this.shouldScrollBottom === false) {
       return;
     }
 
