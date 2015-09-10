@@ -169,7 +169,7 @@ let ConversationsStore = Reflux.createStore({
         from:   Strophe.getBareJidFromJid(sender),
         body:   body,
         time:   moment().format(),
-        type:   'text',
+        type:   type,
         status: 'sending',
       }));
     });

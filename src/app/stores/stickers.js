@@ -21,6 +21,15 @@ let StickersStore = Reflux.createStore({
           'madoka',
         ],
       },
+
+      /*{
+        org:  'hamze',
+        pack: 'ahriticon',
+
+        items: [
+          'crying',
+        ],
+      },*/
     ]);
   },
 

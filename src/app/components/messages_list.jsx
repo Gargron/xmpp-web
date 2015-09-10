@@ -43,6 +43,10 @@ let MessagesList = React.createClass({
   },
 
   _processNewContent () {
+    if (typeof this.state.items === 'undefined') {
+      return;
+    }
+
     let ownJID = this.props.ownJID;
 
     let lastForeignMessage = this.state.items.findLast(function (val) {
