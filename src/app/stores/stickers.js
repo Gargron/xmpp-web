@@ -10,6 +10,11 @@ let StickersStore = Reflux.createStore({
       {
         org:   'walfas',
         pack:  'misc',
+
+        meta: {
+          artist: 'Walfas',
+        },
+
         items: [
           'akari',
           'ichigo',
