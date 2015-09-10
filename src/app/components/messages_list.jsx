@@ -62,7 +62,7 @@ let MessagesList = React.createClass({
     }.bind(this));
 
     if (typeof lastForeignMessage !== 'undefined') {
-      Actions.markMessage(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
+      Actions.markMessage.triggerAsync(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
     }
   },
 

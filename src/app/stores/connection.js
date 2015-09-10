@@ -170,7 +170,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.addHandler(function (message) {
       Actions.messageReceived(message);
       return true;
-    }, null, 'message', 'chat');
+    }, null, 'message', null);
 
     // Handler for presence stanzas that pass by Strophe plugins
     this.connection.addHandler(function (stanza) {

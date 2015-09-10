@@ -21,6 +21,8 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onMessageReceived (stanza) {
+    // console.log(stanza);
+
     if (stanza.querySelectorAll('forwarded').length > 0) {
       // XEP-0280: Message Carbons
       stanza = stanza.querySelector('forwarded message');
@@ -38,21 +40,21 @@ let ConversationsStore = Reflux.createStore({
       threadJID = toJID;
     }
 
+    // Chat State Notification
+    let states = stanza.querySelectorAll('active, composing, inactive, paused, gone');
+
+    if (states.length > 0) {
+      Actions.rosterStateChange(fromJID, states[0].tagName);
+    }
+
+    // Chat Markers
+    let markers = stanza.querySelectorAll('received, displayed, acknowledged');
+
+    if (markers.length > 0) {
+      Actions.messageMarked(threadJID, markers[0].getAttribute('id'), markers[0].tagName);
+    }
+
     if (stanza.querySelectorAll('body, sticker').length === 0) {
-      // Chat State Notification
-      let states = stanza.querySelectorAll('active, composing, inactive, paused, gone');
-
-      if (states.length > 0) {
-        Actions.rosterStateChange(fromJID, states[0].tagName);
-      }
-
-      // Chat Markers
-      let markers = stanza.querySelectorAll('received, displayed, acknowledged');
-
-      if (markers.length > 0) {
-        Actions.messageMarked(fromJID, markers[0].getAttribute('id'), markers[0].tagName);
-      }
-
       return;
     }
 
@@ -88,12 +90,14 @@ let ConversationsStore = Reflux.createStore({
     this._persist();
 
     if (stanza.querySelectorAll('markable').length > 0) {
-      Actions.markMessage(fromJID, msgID, 'received');
+      Actions.markMessage.triggerAsync(fromJID, msgID, 'received');
     }
   },
 
   onMessageMarked (jid, id, marker) {
     id = id * 1;
+
+    // console.log('Marked up to', jid, id, marker);
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.map(function (item) {
@@ -120,6 +124,7 @@ let ConversationsStore = Reflux.createStore({
       id:    id,
     }).up();
 
+    // console.log('Marking message', jid, id, marker, stanza);
     this.connection.send(stanza);
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
@@ -138,7 +143,7 @@ let ConversationsStore = Reflux.createStore({
 
   onSendMessage (jid, body, type) {
     let sender = this.connection.jid;
-    let msgID  = this.messages.get(jid, Immutable.List()).size + 1;
+    let msgID  = this.messages.get(jid, Immutable.List()).size;
 
     let stanza = $msg({
       from: sender,
@@ -160,7 +165,7 @@ let ConversationsStore = Reflux.createStore({
       }).up();
     }
 
-    stanza = stanza.c('markable', { xmlns: Strophe.NS.CHAT_MARKERS });
+    stanza = stanza.c('markable', { xmlns: Strophe.NS.CHAT_MARKERS }).up();
 
     this.connection.send(stanza);
 

@@ -28,7 +28,12 @@ let StickerPickerPopout = React.createClass({
   render () {
     let packTabs = this.state.packs.map(function (pack, i) {
       let thumbUrl = '/images/stickers/' + pack.get('org') + '/' + pack.get('pack') + '/thumb.png';
-      return <div className="popout-tab" onClick={this.handleTabClick.bind(this, i)}><img src={thumbUrl} /></div>;
+
+      return (
+        <IconButton className="popout-tab" onClick={this.handleTabClick.bind(this, i)} tooltip={pack.getIn(['meta', 'name'])} tooltipPosition="top-center" style={{width: '35px', height: '35px'}}>
+          <img src={thumbUrl} />
+        </IconButton>
+      );
     }, this);
 
     let stickers;
@@ -64,9 +69,9 @@ let StickerPickerPopout = React.createClass({
     return (
       <div className="sticker-picker__popout" style={{display: this.props.open ? 'flex' : 'none'}}>
         <div className="sticker-picker__popout__header">
-          <div className="popout-tab" onClick={this.handleTabClick.bind(this, false)}>
+          <IconButton className="popout-tab" onClick={this.handleTabClick.bind(this, false)} style={{width: '35px', height: '35px'}} tooltip="Recently used" tooltipPosition="top-center">
             <FontIcon className="material-icons" color={Colors.grey500}>access_time</FontIcon>
-          </div>
+          </IconButton>
 
           {packTabs}
         </div>
