@@ -4,6 +4,7 @@ var buildPath = path.resolve(__dirname, 'build');
 var nodeModulesPath = path.resolve(__dirname, 'node_modules');
 var TransferWebpackPlugin = require('transfer-webpack-plugin');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var AppCachePlugin = require('appcache-webpack-plugin');
 
 var config = {
   entry: [
@@ -39,6 +40,10 @@ var config = {
 
     new ExtractTextPlugin('style.css', {
       allChunks: true
+    }),
+
+    new AppCachePlugin({
+      cache: ['https://fonts.googleapis.com/css?family=Roboto:400,300,500', 'https://fonts.googleapis.com/icon?family=Material+Icons']
     })
   ],
   module: {
