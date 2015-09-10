@@ -27,6 +27,9 @@ let MessagesList = React.createClass({
 
   componentDidMount () {
     this._markMessages(this.state.items);
+
+    let node = React.findDOMNode(this);
+    node.scrollTop = node.scrollHeight;
   },
 
   componentWillReceiveProps (nextProps) {
