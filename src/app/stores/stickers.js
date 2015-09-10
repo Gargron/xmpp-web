@@ -13,7 +13,7 @@ let StickersStore = Reflux.createStore({
 
         meta: {
           artist: 'Walfas',
-          name: 'Miscellaneous',
+          name:   'Miscellaneous',
         },
 
         items: [
@@ -29,12 +29,13 @@ let StickersStore = Reflux.createStore({
 
         meta: {
           artist: '정언영',
-          name: 'Ahriticon',
+          name:   'Ahriticon',
         },
 
         items: [
           'crying',
           'eating',
+          'greeting',
         ],
       },
     ]);
