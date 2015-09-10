@@ -12,6 +12,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.sendMessage, this.onSendMessage);
     this.listenTo(Actions.sendStateChange, this.onSendStateChange);
     this.listenTo(Actions.logout, this.onLogout);
+    this.listenTo(Actions.markMessage, this.onMarkMessage);
     this.getInitialState();
   },
 
@@ -45,10 +46,11 @@ let ConversationsStore = Reflux.createStore({
         Actions.rosterStateChange(fromJID, states[0].tagName);
       }
 
+      // Chat Markers
       let markers = stanza.querySelectorAll('received, displayed, acknowledged');
 
       if (markers.length > 0) {
-        Actions.messageMarked(fromJID, msgID, markers[0].tagName);
+        Actions.messageMarked(fromJID, markers[0].getAttribute('id'), markers[0].tagName);
       }
 
       return;
@@ -71,12 +73,18 @@ let ConversationsStore = Reflux.createStore({
       timestamp = stanza.querySelector('delay').getAttribute('stamp');
     }
 
+    if (stanza.querySelectorAll('markable').length > 0) {
+      Actions.markMessage.triggerAsync(fromJID, msgID, 'received');
+    }
+
     this.messages = this.messages.update(threadJID, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
-        from: fromJID,
-        body: body,
-        time: timestamp,
-        type: type,
+        id:     msgID,
+        from:   fromJID,
+        body:   body,
+        time:   timestamp,
+        type:   type,
+        status: 'received',
       }));
     });
 
@@ -85,17 +93,57 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onMessageMarked (jid, id, marker) {
-    console.log(jid, id, marker);
+    id = id * 1;
+
+    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
+      return val.map(function (item) {
+        if (item.get('from') !== jid && item.get('id', 0) <= id) {
+          return item.set('status', marker);
+        } else {
+          return item;
+        }
+      });
+    });
+
+    this.trigger(this.messages);
+    this._persist();
   },
 
-  onSendMessage (jid, body, type) {
+  onMarkMessage (jid, id, marker) {
     let sender = this.connection.jid;
 
     let stanza = $msg({
       from: sender,
       to:   jid,
+    }).c(marker, {
+      xmlns: Strophe.NS.CHAT_MARKERS,
+      id:    id,
+    }).up();
+
+    this.connection.send(stanza);
+
+    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
+      return val.map(function (item) {
+        if (item.get('from') === jid && item.get('id') === id) {
+          return item.set('status', marker);
+        } else {
+          return item;
+        }
+      });
+    });
+
+    this.trigger(this.messages);
+  },
+
+  onSendMessage (jid, body, type) {
+    let sender = this.connection.jid;
+    let msgID  = this.messages.get(jid, Immutable.List()).size + 1;
+
+    let stanza = $msg({
+      from: sender,
+      to:   jid,
       type: 'chat',
-      id:   this.messages.get(jid, Immutable.List()).size + 1,
+      id:   msgID,
     });
 
     if (type === 'text') {
@@ -117,10 +165,12 @@ let ConversationsStore = Reflux.createStore({
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
-        from: Strophe.getBareJidFromJid(sender),
-        body: body,
-        time: moment().format(),
-        type: 'text',
+        id:     msgID,
+        from:   Strophe.getBareJidFromJid(sender),
+        body:   body,
+        time:   moment().format(),
+        type:   'text',
+        status: 'sending',
       }));
     });
 

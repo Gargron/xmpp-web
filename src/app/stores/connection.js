@@ -62,6 +62,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.disco.addFeature(Strophe.NS.CARBONS);
     this.connection.disco.addFeature(Strophe.NS.VERSION);
     this.connection.disco.addFeature(Strophe.NS.LAST_ACTIVITY);
+    this.connection.disco.addFeature(Strophe.NS.CHAT_MARKERS);
 
     window.connection = this.connection;
 

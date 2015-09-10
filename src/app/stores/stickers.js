@@ -6,7 +6,7 @@ let moment    = require('moment');
 let StickersStore = Reflux.createStore({
 
   getInitialState () {
-    return this.store = Immutable.fromJS([
+    return Immutable.fromJS([
       {
         org:   'walfas',
         pack:  'misc',

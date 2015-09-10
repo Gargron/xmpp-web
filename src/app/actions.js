@@ -31,6 +31,7 @@ let Actions = Reflux.createActions([
   'sendMessage',
   'sendStateChange',
   'loadArchive',
+  'markMessage',
 
   'openEditProfileDialog',
   'updateProfile',

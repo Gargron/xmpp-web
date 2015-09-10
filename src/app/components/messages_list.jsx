@@ -16,6 +16,10 @@ let MessagesList = React.createClass({
     }),
   ],
 
+  componentDidMount () {
+    this._processNewContent();
+  },
+
   componentWillReceiveProps (nextProps) {
     this.setState({
       items: ConversationsStore.getInitialState().get(nextProps.jid, []),
@@ -24,16 +28,30 @@ let MessagesList = React.createClass({
 
   componentWillUpdate () {
     let node = React.findDOMNode(this);
-    this.shouldScrollBottom =  node.scrollHeight - node.scrollTop === node.clientHeight;
+    this.shouldScrollBottom = node.scrollHeight - node.scrollTop === node.clientHeight;
   },
 
   componentDidUpdate () {
+    this._processNewContent();
+
     if (this.shouldScrollBottom === false) {
       return;
     }
 
     let node = React.findDOMNode(this);
     node.scrollTop = node.scrollHeight;
+  },
+
+  _processNewContent () {
+    let ownJID = this.props.ownJID;
+
+    let lastForeignMessage = this.state.items.findLast(function (val) {
+      return val.get('from') !== ownJID && val.get('status') !== 'displayed';
+    });
+
+    if (lastForeignMessage) {
+      Actions.markMessage.triggerAsync(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
+    }
   },
 
   render () {
