@@ -22,14 +22,19 @@ let StickersStore = Reflux.createStore({
         ],
       },
 
-      /*{
+      {
         org:  'hamze',
         pack: 'ahriticon',
 
+        meta: {
+          artist: '정언영',
+        },
+
         items: [
           'crying',
+          'eating',
         ],
-      },*/
+      },
     ]);
   },
 

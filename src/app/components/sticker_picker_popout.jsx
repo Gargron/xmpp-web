@@ -36,7 +36,7 @@ let StickerPickerPopout = React.createClass({
     if (this.state.pack === false) {
       // Display last used stickers
       stickers = this.state.packs.reduce(function (r, val) {
-        return r.merge(val.get('items').map(function (item) {
+        return r.concat(val.get('items').map(function (item) {
           return {
             org:  val.get('org'),
             pack: val.get('pack'),
@@ -56,8 +56,9 @@ let StickerPickerPopout = React.createClass({
       });
     }
 
-    stickers = stickers.map(function (sticker, i) {
-      return <StickerItem key={i} sticker={sticker} jid={this.props.jid} />;
+    stickers = stickers.map(function (sticker) {
+      let key = [sticker.org, sticker.pack, sticker.id].join('.');
+      return <StickerItem key={key} sticker={sticker} jid={this.props.jid} />;
     }, this);
 
     return (

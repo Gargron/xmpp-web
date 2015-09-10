@@ -5,47 +5,35 @@ let moment             = require('moment');
 let ConversationsStore = require('../stores/conversations');
 let utils              = require('../utils');
 let Actions            = require('../actions.js');
+let Immutable          = require('immutable');
 
 let Message = require('./message');
 let Sticker = require('./sticker');
 
 let MessagesList = React.createClass({
-  mixins: [
-    Reflux.connectFilter(ConversationsStore, "items", function (store) {
-      return store.get(this.props.jid, []);
-    }),
-  ],
+  mixins: [Reflux.listenTo(ConversationsStore, "onConversationsStore")],
 
-  componentDidMount () {
-    this._processNewContent();
+  onConversationsStore (store) {
+    this.setState({
+      items: store.get(this.props.jid, Immutable.List()),
+    });
+  },
+
+  getInitialState () {
+    return {
+      items: ConversationsStore.getInitialState().get(this.props.jid, Immutable.List()),
+    };
   },
 
   componentWillReceiveProps (nextProps) {
     this.setState({
-      items: ConversationsStore.getInitialState().get(nextProps.jid, []),
+      items: ConversationsStore.getInitialState().get(nextProps.jid, Immutable.List()),
     });
   },
 
   componentWillUpdate () {
     let node = React.findDOMNode(this);
     this.shouldScrollBottom = node.scrollHeight - node.scrollTop === node.clientHeight;
-  },
-
-  componentDidUpdate () {
-    this._processNewContent();
-
-    if (this.shouldScrollBottom === false) {
-      return;
-    }
-
-    let node = React.findDOMNode(this);
-    node.scrollTop = node.scrollHeight;
-  },
-
-  _processNewContent () {
-    if (typeof this.state.items === 'undefined') {
-      return;
-    }
 
     let ownJID = this.props.ownJID;
 
@@ -56,6 +44,15 @@ let MessagesList = React.createClass({
     if (lastForeignMessage) {
       Actions.markMessage.triggerAsync(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
     }
+  },
+
+  componentDidUpdate () {
+    if (this.shouldScrollBottom === false) {
+      return;
+    }
+
+    let node = React.findDOMNode(this);
+    node.scrollTop = node.scrollHeight;
   },
 
   render () {
