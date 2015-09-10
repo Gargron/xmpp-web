@@ -25,25 +25,23 @@ let MessagesList = React.createClass({
     };
   },
 
+  componentDidMount () {
+    this._markMessages(this.state.items);
+  },
+
   componentWillReceiveProps (nextProps) {
+    let items = ConversationsStore.getInitialState().get(nextProps.jid, Immutable.List());
+
     this.setState({
-      items: ConversationsStore.getInitialState().get(nextProps.jid, Immutable.List()),
+      items: items,
     });
+
+    this._markMessages(items);
   },
 
   componentWillUpdate () {
     let node = React.findDOMNode(this);
     this.shouldScrollBottom = node.scrollHeight - node.scrollTop === node.clientHeight;
-
-    let ownJID = this.props.ownJID;
-
-    let lastForeignMessage = this.state.items.findLast(function (val) {
-      return val.get('from') !== ownJID && val.get('status') !== 'displayed';
-    });
-
-    if (lastForeignMessage) {
-      Actions.markMessage.triggerAsync(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
-    }
   },
 
   componentDidUpdate () {
@@ -53,6 +51,16 @@ let MessagesList = React.createClass({
 
     let node = React.findDOMNode(this);
     node.scrollTop = node.scrollHeight;
+  },
+
+  _markMessages (items) {
+    let lastForeignMessage = items.findLast(function (val) {
+      return val.get('from') !== this.props.ownJID && val.get('status') !== 'displayed';
+    }.bind(this));
+
+    if (typeof lastForeignMessage !== 'undefined') {
+      Actions.markMessage(lastForeignMessage.get('from'), lastForeignMessage.get('id'), 'displayed');
+    }
   },
 
   render () {

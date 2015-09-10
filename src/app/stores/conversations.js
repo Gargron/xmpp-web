@@ -73,10 +73,6 @@ let ConversationsStore = Reflux.createStore({
       timestamp = stanza.querySelector('delay').getAttribute('stamp');
     }
 
-    if (stanza.querySelectorAll('markable').length > 0) {
-      Actions.markMessage.triggerAsync(fromJID, msgID, 'received');
-    }
-
     this.messages = this.messages.update(threadJID, Immutable.List(), function (val) {
       return val.push(Immutable.Map({
         id:     msgID,
@@ -90,6 +86,10 @@ let ConversationsStore = Reflux.createStore({
 
     this.trigger(this.messages);
     this._persist();
+
+    if (stanza.querySelectorAll('markable').length > 0) {
+      Actions.markMessage(fromJID, msgID, 'received');
+    }
   },
 
   onMessageMarked (jid, id, marker) {
@@ -133,6 +133,7 @@ let ConversationsStore = Reflux.createStore({
     });
 
     this.trigger(this.messages);
+    this._persist();
   },
 
   onSendMessage (jid, body, type) {
