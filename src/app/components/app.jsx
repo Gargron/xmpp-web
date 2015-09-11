@@ -11,12 +11,19 @@ let App = React.createClass({
   mixins: [
     Reflux.listenTo(Actions.openChat, "onOpenChat"),
     Reflux.listenTo(Actions.closeChat, "onCloseChat"),
+    Reflux.listenTo(Actions.windowFocus, "onWindowFocus"),
   ],
 
   getInitialState () {
     return {
       openedJID: false,
     };
+  },
+
+  onWindowFocus () {
+    if (!!this.state.openedJID) {
+      Actions.resetUnreadCounter(this.state.openedJID);
+    }
   },
 
   onOpenChat (jid) {

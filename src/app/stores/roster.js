@@ -16,6 +16,8 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.resetUnreadCounter, this.onResetUnreadCounter);
     this.listenTo(Actions.openChat, this.onOpenChat);
     this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
+    this.listenTo(Actions.windowFocus, this.onWindowFocus);
+    this.listenTo(Actions.windowFocusLost, this.onWindowFocusLost);
     this.getInitialState();
   },
 
@@ -75,9 +77,17 @@ let RosterStore = Reflux.createStore({
       return;
     }
 
+    let unread;
+
+    if (this.openChat === jid && this.hasWindowFocus) {
+      unread = 0;
+    } else {
+      unread = this.roster.getIn([itemIndex, 'unread'], 0) + 1;
+    }
+
     this.roster = this.roster.update(itemIndex, function (val) {
       return val.merge({
-        unread:        val.get('unread') + 1,
+        unread:        unread,
         last_activity: moment().format(),
       });
     });
@@ -106,6 +116,7 @@ let RosterStore = Reflux.createStore({
   },
 
   onOpenChat (jid) {
+    this.openChat = jid;
     this.onResetUnreadCounter(jid);
   },
 
@@ -235,9 +246,25 @@ let RosterStore = Reflux.createStore({
     }, jid);
   },
 
+  onWindowFocus () {
+    this.hasWindowFocus = true;
+  },
+
+  onWindowFocusLost () {
+    this.hasWindowFocus = false;
+  },
+
   getInitialState () {
     if (typeof this.roster === 'undefined') {
       this.roster = Immutable.List();
+    }
+
+    if (typeof this.openChat === 'undefined') {
+      this.openChat = false;
+    }
+
+    if (typeof this.hasWindowFocus === 'undefined') {
+      this.hasWindowFocus = true;
     }
 
     return this.roster;

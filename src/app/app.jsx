@@ -42,4 +42,12 @@
   window.onbeforeunload = function (e) {
     Actions.leave();
   };
+
+  window.onfocus = function () {
+    Actions.windowFocus();
+  };
+
+  window.onblur = function () {
+    Actions.windowFocusLost();
+  };
 })();

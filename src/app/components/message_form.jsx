@@ -12,26 +12,25 @@ let MessageForm = React.createClass({
 
   getInitialState () {
     return {
-      body:        '',
-      idleSeconds: 0,
-      typing:      false,
+      body: '',
     };
   },
 
   componentDidMount () {
+    this.typing      = false;
+    this.idleSeconds = 0;
+
     this.everySecond = setInterval(function () {
-      let newIdleSeconds = this.state.idleSeconds + 1;
-      let newTyping      = this.state.typing;
+      let newIdleSeconds = this.idleSeconds + 1;
+      let newTyping      = this.typing;
 
       if (newTyping && newIdleSeconds > 4) {
         newTyping = false;
         Actions.sendStateChange(this.props.jid, 'active');
       }
 
-      this.setState({
-        idleSeconds: newIdleSeconds,
-        typing:      newTyping,
-      });
+      this.idleSeconds = newIdleSeconds;
+      this.typing      = newTyping;
     }.bind(this), 1000);
   },
 
@@ -49,7 +48,7 @@ let MessageForm = React.createClass({
     if (e.keyCode === 13) {
       this._commitMessage();
     } else {
-      let newTyping = this.state.typing;
+      let newTyping = this.typing;
       let newIdleSeconds;
 
       if (!newTyping) {
@@ -60,10 +59,8 @@ let MessageForm = React.createClass({
 
       newIdleSeconds = 0;
 
-      this.setState({
-        idleSeconds: newIdleSeconds,
-        typing:      newTyping,
-      });
+      this.idleSeconds = newIdleSeconds;
+      this.typing      = newTyping;
     }
   },
 

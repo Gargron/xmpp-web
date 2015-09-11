@@ -6,6 +6,9 @@ let Actions = Reflux.createActions([
   'logout',
   'leave',
 
+  'windowFocus',
+  'windowFocusLost',
+
   'connection',
   'connectionLost',
   'attemptReconnection',
