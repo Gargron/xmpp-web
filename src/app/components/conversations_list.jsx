@@ -11,10 +11,12 @@ let DropDownIcon = mui.DropDownIcon;
 let IconButton   = mui.IconButton;
 let Colors       = mui.Styles.Colors;
 
-let RosterList        = require('./roster_list');
-let RosterRequestList = require('./roster_request_list');
-let RosterRequestForm = require('./roster_request_form');
-let EditProfileDialog = require('./edit_profile_dialog');
+let RosterList          = require('./roster_list');
+let RosterRequestList   = require('./roster_request_list');
+let RosterRequestForm   = require('./roster_request_form');
+let EditProfileDialog   = require('./edit_profile_dialog');
+let NotificationsDialog = require('./notifications_dialog');
+let PasswordDialog      = require('./password_dialog');
 
 let ConversationsList = React.createClass({
   mixins: [
@@ -98,6 +100,8 @@ let ConversationsList = React.createClass({
         </div>
 
         <EditProfileDialog />
+        <NotificationsDialog />
+        <PasswordDialog />
       </div>
     );
   },

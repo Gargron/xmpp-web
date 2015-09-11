@@ -19,7 +19,6 @@ let Main = React.createClass({
     Reflux.listenTo(Actions.connection, "onConnection"),
     Reflux.listenTo(Actions.connectionLost, "onConnectionLost"),
     Reflux.listenTo(Actions.loginFailed, "onLoginFailed"),
-    Reflux.listenTo(Actions.messageReceived, "onMessageReceived"),
     Reflux.listenTo(Actions.attemptReconnection, "onAttemptReconnection"),
   ],
 
@@ -68,19 +67,6 @@ let Main = React.createClass({
       loggedIn: false,
       loading: false,
     });
-  },
-
-  onMessageReceived (stanza) {
-    if (stanza.querySelectorAll('body, sticker').length === 0) {
-      return;
-    }
-
-    if (typeof Audio === 'undefined') {
-      return;
-    }
-
-    let audio = new Audio('/sounds/notification_message.mp3');
-    audio.play();
   },
 
   onConnectionLost () {

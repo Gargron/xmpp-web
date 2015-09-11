@@ -5,13 +5,11 @@ let AccountStore    = require('../stores/account');
 let Actions         = require('../actions');
 let utils           = require('../utils');
 
-let ListItem   = mui.ListItem;
 let IconButton = mui.IconButton;
 let FontIcon   = mui.FontIcon;
 let Colors     = mui.Styles.Colors;
 let Avatar     = mui.Avatar;
 let Dialog     = mui.Dialog;
-let CardMedia  = mui.CardMedia;
 let TextField  = mui.TextField;
 
 let resizeImage = function (img, type) {

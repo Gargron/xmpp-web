@@ -39,6 +39,8 @@ let Actions = Reflux.createActions([
   'profileUpdateReceived',
 
   'openNotificationsDialog',
+  'toggleNotificationsSetting',
+  'toggleSoundsSetting',
 
   'openPasswordDialog',
   'updatePassword',

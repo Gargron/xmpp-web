@@ -240,9 +240,9 @@ let ConversationsStore = Reflux.createStore({
   getInitialState () {
     if (typeof this.messages === 'undefined') {
       this.messages = Immutable.Map();
-    }
 
-    this._load();
+      this._load();
+    }
 
     return this.messages;
   },
