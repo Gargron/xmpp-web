@@ -28,7 +28,7 @@ let ConversationsList = React.createClass({
   getInitialState () {
     return {
       online: true,
-      updateReady: false,
+      updateReady: window.applicationCache.status === window.applicationCache.UPDATEREADY,
     };
   },
 

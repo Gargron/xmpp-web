@@ -52,9 +52,7 @@
   };
 
   // Check for application updates
-  window.applicationCache.addEventListener('updateready', function () {
-    if (window.applicationCache.status === window.applicationCache.UPDATEREADY) {
-      Actions.updateReady();
-    }
-  }, false);
+  window.applicationCache.onupdateready = function () {
+    Actions.updateReady();
+  };
 })();

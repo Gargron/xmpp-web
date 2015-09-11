@@ -110,6 +110,13 @@ let Utils = {
       status = topResource.get('status');
     }
 
+    if (status === 'Offline') {
+      if (u.get('subscription') === 'none') {
+        status = 'Pending authorization';
+      } else if (u.get('subscription') === 'from') {
+        status = 'Not subscribed';
+      }
+    }
 
     if (u.getIn(['vcard', 'photo'], '') !== '') {
       photo = u.getIn(['vcard', 'photo']);
