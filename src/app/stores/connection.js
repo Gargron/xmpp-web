@@ -63,6 +63,7 @@ let ConnectionStore = Reflux.createStore({
     this.connection.disco.addFeature(Strophe.NS.VERSION);
     this.connection.disco.addFeature(Strophe.NS.LAST_ACTIVITY);
     this.connection.disco.addFeature(Strophe.NS.CHAT_MARKERS);
+    this.connection.disco.addFeature(Strophe.NS.RECEIPTS);
 
     window.connection = this.connection;
 

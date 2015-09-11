@@ -15,6 +15,7 @@
   Strophe.addNamespace('REGISTRATION',  'jabber:iq:register');
   Strophe.addNamespace('LAST_ACTIVITY', 'jabber:iq:last');
   Strophe.addNamespace('CHAT_MARKERS',  'urn:xmpp:chat-markers:0');
+  Strophe.addNamespace('RECEIPTS',      'urn:xmpp:receipts');
 
   let React   = require('react/addons');
   let injectTapEventPlugin = require('react-tap-event-plugin');

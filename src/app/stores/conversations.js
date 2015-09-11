@@ -13,6 +13,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.sendStateChange, this.onSendStateChange);
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.markMessage, this.onMarkMessage);
+    this.listenTo(Actions.confirmMessageDelivery, this.onConfirmMessageDelivery);
     this.getInitialState();
   },
 
@@ -47,7 +48,7 @@ let ConversationsStore = Reflux.createStore({
       Actions.rosterStateChange(fromJID, states[0].tagName);
     }
 
-    // Chat Markers
+    // Chat Markers and Message Delivery Receipts
     let markers = stanza.querySelectorAll('received, displayed, acknowledged');
 
     if (markers.length > 0) {
@@ -90,7 +91,13 @@ let ConversationsStore = Reflux.createStore({
     this._persist();
 
     if (stanza.querySelectorAll('markable').length > 0) {
+      // Chat Markers
       Actions.markMessage.triggerAsync(fromJID, msgID, 'received');
+    }
+
+    if (stanza.querySelectorAll('request').length > 0) {
+      // Message Delivery Receipts
+      Actions.confirmMessageDelivery.triggerAsync(fromJID, msgID);
     }
   },
 
@@ -141,6 +148,33 @@ let ConversationsStore = Reflux.createStore({
     this._persist();
   },
 
+  onConfirmMessageDelivery (jid, id) {
+    let sender = this.connection.jid;
+
+    let stanza = $msg({
+      from: sender,
+      to:   jid,
+    }).c('received', {
+      xmlns: Strophe.NS.RECEIPTS,
+      id:    id,
+    }).up();
+
+    this.connection.send(stanza);
+
+    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
+      return val.map(function (item) {
+        if (item.get('from') === jid && item.get('id') === id) {
+          return item.set('status', 'received');
+        } else {
+          return item;
+        }
+      });
+    });
+
+    this.trigger(this.messages);
+    this._persist();
+  },
+
   onSendMessage (jid, body, type) {
     let sender = this.connection.jid;
     let msgID  = this.messages.get(jid, Immutable.List()).size;
@@ -166,6 +200,7 @@ let ConversationsStore = Reflux.createStore({
     }
 
     stanza = stanza.c('markable', { xmlns: Strophe.NS.CHAT_MARKERS }).up();
+    stanza = stanza.c('request', { xmlns: Strophe.NS.RECEIPTS }).up();
 
     this.connection.send(stanza);
 

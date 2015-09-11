@@ -16,6 +16,7 @@ The client is live on <https://zeonfed.org>.
 - XEP-0092: Software Version
 - XEP-0012: Last Activity
 - XEP-0333: Chat Markers
+- XEP-0184: Message Delivery Receipts
 
 ## Road map
 
@@ -29,7 +30,6 @@ The client is live on <https://zeonfed.org>.
 
 ## Nice to haves but probably far off
 
-- XEP-0184: Message Delivery Receipts
 - XEP-0313: Message Archive Management
 - OTR support
 

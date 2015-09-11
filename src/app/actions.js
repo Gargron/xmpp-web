@@ -32,10 +32,16 @@ let Actions = Reflux.createActions([
   'sendStateChange',
   'loadArchive',
   'markMessage',
+  'confirmMessageDelivery',
 
   'openEditProfileDialog',
   'updateProfile',
   'profileUpdateReceived',
+
+  'openNotificationsDialog',
+
+  'openPasswordDialog',
+  'updatePassword',
 ]);
 
 module.exports = Actions;

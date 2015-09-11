@@ -45,12 +45,18 @@ let ConversationsList = React.createClass({
       Actions.logout();
     } else if (item.payload === 'profile') {
       Actions.openEditProfileDialog();
+    } else if (item.payload === 'notifications') {
+      Actions.openNotificationsDialog();
+    } else if (item.payload === 'password') {
+      Actions.openPasswordDialog();
     }
   },
 
   render () {
     let menu = [
       { payload: 'profile', text: 'Profile' },
+      { payload: 'notifications', text: 'Notifications' },
+      { payload: 'password', text: 'Change password' },
       { payload: 'logout', text: 'Logout' },
     ];
 
