@@ -68,7 +68,7 @@ var config = {
       },
 
       {
-        test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf$/,
+        test: /\.jpe?g$|\.gif$|\.png$|\.svg$|\.woff$|\.ttf|\.ico$/,
         loader: "file"
       },
     ]

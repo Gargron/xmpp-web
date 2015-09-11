@@ -23,7 +23,6 @@ The client is live on <https://zeonfed.org>.
 - Some form of infinite scrolling
 - Persist roster in localStorage
 - Desktop notifications
-- Favicon
 - XEP-0077: Changing password
 - XEP-0045: Multi-User Chat
 - Improve UI in the event of a lost connection
