@@ -22,11 +22,13 @@ let ConversationsList = React.createClass({
   mixins: [
     Reflux.listenTo(Actions.connectionLost, 'onConnectionLost'),
     Reflux.listenTo(Actions.connection, 'onConnection'),
+    Reflux.listenTo(Actions.updateReady, 'onUpdateReady'),
   ],
 
   getInitialState () {
     return {
       online: true,
+      updateReady: false,
     };
   },
 
@@ -39,6 +41,12 @@ let ConversationsList = React.createClass({
   onConnection () {
     this.setState({
       online: true,
+    });
+  },
+
+  onUpdateReady () {
+    this.setState({
+      updateReady: true,
     });
   },
 
@@ -62,16 +70,32 @@ let ConversationsList = React.createClass({
       { payload: 'logout', text: 'Logout' },
     ];
 
-    let connectionIndicator = '';
+    let warnings = '';
 
     if (!this.state.online) {
-      connectionIndicator = (
+      warnings = (
         <div>
-          <div className="roster-alert">
-            No connection
+          <div className="roster-alert critical">
+            <FontIcon className="material-icons" color={Colors.amberA200} style={{fontSize: '35px', padding: '5px'}}>wifi</FontIcon>
+
+            <div>
+              <strong>No connection</strong>
+              <span>Will try reconnecting every 5 seconds...</span>
+            </div>
           </div>
 
           <div className="failure-overlay"></div>
+        </div>
+      );
+    } else if (this.state.updateReady) {
+      warnings = (
+        <div className="roster-alert info">
+          <FontIcon className="material-icons" color={Colors.teal200} style={{fontSize: '35px', padding: '5px'}}>cached</FontIcon>
+
+          <div>
+            <strong>Update available</strong>
+            <span>Refresh the page for it to take effect</span>
+          </div>
         </div>
       );
     }
@@ -90,7 +114,7 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
         </Toolbar>
 
-        {connectionIndicator}
+        {warnings}
 
         <RosterList />
         <RosterRequestList />

@@ -128,6 +128,7 @@ body {
     flex-grow: 1;
     border-top: 1px solid #bbb;
     padding: 0 !important;
+    border-radius: 0 !important;
     overflow-x: hidden;
     overflow-y: scroll;
   }
@@ -468,21 +469,47 @@ body {
 }
 
 .roster-alert {
-  background: #f44336;
-  color: #ffebee;
-  padding: 10px 16px;
+  cursor: default;
+  background: #80cbc4;
+  color: rgba(0, 0, 0, 0.7);
+  border-top: 1px solid #bbb;
+  padding: 20px 16px;
   overflow: hidden;
-  text-align: center;
-  border-top: 1px solid #b71c1c;
-  border-bottom: 1px solid #fff;
-  font-size: 16px;
   line-height: 24px;
+
+  .material-icons {
+    float: right;
+    top: 2px;
+    background: #fff;
+    border-radius: 35px;
+  }
+
+  div {
+    overflow: hidden;
+  }
+
+  strong, span {
+    display: block;
+    font-weight: normal;
+  }
+
+  strong {
+    font-size: 18px;
+  }
+
+  span {
+    font-size: 13px;
+  }
+
+  &.critical {
+    background: #ffd740;
+  }
 }
 
 .failure-overlay {
   position: absolute;
   width: 100%;
-  height: calc(100% - 56px - 46px);
+  height: calc(100% - 90px - 56px);
   background: rgba(255, 255, 255, 0.5);
   z-index: 100;
   border-radius: 0 0 6px 0;

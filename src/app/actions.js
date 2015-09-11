@@ -8,6 +8,7 @@ let Actions = Reflux.createActions([
 
   'windowFocus',
   'windowFocusLost',
+  'updateReady',
 
   'connection',
   'connectionLost',
