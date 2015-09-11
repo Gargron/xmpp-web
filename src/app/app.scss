@@ -483,3 +483,11 @@ body {
   z-index: 100;
   border-radius: 0 0 6px 0;
 }
+
+.dropdown-menu {
+  div[tabindex="0"] {
+    position: relative;
+    width: 200px !important;
+    z-index: 99 !important;
+  }
+}

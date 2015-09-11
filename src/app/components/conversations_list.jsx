@@ -82,7 +82,7 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
 
           <ToolbarGroup key={1} float="right">
-            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} menuItemStyle={{width: '240px'}}>
+            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} className="dropdown-menu">
               <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>menu</FontIcon>
             </DropDownIcon>
           </ToolbarGroup>
