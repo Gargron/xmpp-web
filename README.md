@@ -1,11 +1,17 @@
 # XMPP Web
 
+[![Flattr this!](https://button.flattr.com/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=Gargron&url=https%3A%2F%2Fgithub.com%2FGargron%2Fxmpp-web)
+
 The client is live on <https://zeonfed.org>.
 
 ## Usage
 
     npm install
     npm start
+
+For generating static assets for production:
+
+    npm run build
 
 ## Implemented XEPs
 
@@ -29,14 +35,8 @@ The client is live on <https://zeonfed.org>.
 ## Nice to haves but probably far off
 
 - XEP-0313: Message Archive Management
-- OTR support
+- OMEMO support
 
 ## Stickers XEP
 
-I doubt this XEP would ever get accepted as a proper, acknowledged protocol extension, for one because it is not very serious, and also because it *has*, at least in its current form, to rely on a central trusted authority who hosts the stickers. However, stickers are a great feature of such apps as FB Messenger and LINE, and it would be a shame if the reason an open and federated protocol like XMPP lost out to those walled garden apps just because of stickers. So here we are.
-
-XML Namespace: `http://jabber.zeonfederated.com/protocol/stickers`
-
-The message stanza receives a new element, `<sticker>`, with the attribute `uid`. That attribute is a dot-concatenated sequence of organization name, pack name, and sticker ID (e.g. `pusheen.halloween.pumpkin`).
-
-If the element is present, the body of the message is ignored, the message is to be presented as a sticker. The `uid` is to be converted into an image URL beginning with the sticker authority website and ending with `.png`.
+This implementation has a chat stickers feature. For discussion/spec, refer to [Issue #3](https://github.com/Gargron/xmpp-web/issues/3)

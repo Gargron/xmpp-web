@@ -2,6 +2,8 @@ let Reflux    = require('reflux');
 let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 
+const STORE_NAME = 'NotificationsStore';
+
 let NotificationsStore = Reflux.createStore({
 
   init () {
@@ -102,15 +104,15 @@ let NotificationsStore = Reflux.createStore({
   },
 
   _persist () {
-    localStorage['NotificationsStore'] = JSON.stringify(this.state.toJS());
+    localStorage[STORE_NAME] = JSON.stringify(this.state.toJS());
   },
 
   _load () {
-    if (typeof localStorage['NotificationsStore'] === 'undefined') {
+    if (typeof localStorage[STORE_NAME] === 'undefined') {
       return;
     }
 
-    this.state = Immutable.fromJS(JSON.parse(localStorage['NotificationsStore']));
+    this.state = Immutable.fromJS(JSON.parse(localStorage[STORE_NAME]));
   },
 
 });

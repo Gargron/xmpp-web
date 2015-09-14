@@ -3,6 +3,15 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let moment    = require('moment');
 
+const STORE_NAME = 'ConversationsStore';
+
+const MARKERS = {
+  sending:      0,
+  received:     1,
+  displayed:    2,
+  acknowledged: 3,
+};
+
 let ConversationsStore = Reflux.createStore({
 
   init () {
@@ -22,8 +31,6 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onMessageReceived (stanza) {
-    // console.log(stanza);
-
     if (stanza.querySelectorAll('forwarded').length > 0) {
       // XEP-0280: Message Carbons
       stanza = stanza.querySelector('forwarded message');
@@ -104,11 +111,9 @@ let ConversationsStore = Reflux.createStore({
   onMessageMarked (jid, id, marker) {
     id = id * 1;
 
-    // console.log('Marked up to', jid, id, marker);
-
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
       return val.map(function (item) {
-        if (item.get('from') !== jid && item.get('id', 0) <= id) {
+        if (item.get('from') !== jid && item.get('id', 0) <= id && MARKERS[item.get('status')] < MARKERS[marker]) {
           return item.set('status', marker);
         } else {
           return item;
@@ -131,7 +136,6 @@ let ConversationsStore = Reflux.createStore({
       id:    id,
     }).up();
 
-    // console.log('Marking message', jid, id, marker, stanza);
     this.connection.send(stanza);
 
     this.messages = this.messages.update(jid, Immutable.List(), function (val) {
@@ -234,7 +238,7 @@ let ConversationsStore = Reflux.createStore({
   },
 
   onLogout () {
-    localStorage.removeItem('ConversationsStore');
+    localStorage.removeItem(STORE_NAME);
   },
 
   getInitialState () {
@@ -248,15 +252,15 @@ let ConversationsStore = Reflux.createStore({
   },
 
   _load () {
-    if (typeof localStorage['ConversationsStore'] === 'undefined') {
+    if (typeof localStorage[STORE_NAME] === 'undefined') {
       return;
     }
 
-    this.messages = Immutable.fromJS(JSON.parse(localStorage['ConversationsStore']));
+    this.messages = Immutable.fromJS(JSON.parse(localStorage[STORE_NAME]));
   },
 
   _persist () {
-    localStorage['ConversationsStore'] = JSON.stringify(this.messages.toJS());
+    localStorage[STORE_NAME] = JSON.stringify(this.messages.toJS());
   },
 
 });

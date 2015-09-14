@@ -3,7 +3,9 @@ let Actions   = require('../actions.js');
 let Immutable = require('immutable');
 let utils     = require('../utils');
 
-const BOSH_URL = 'https://zeonfed.org/http-bind';
+const BOSH_URL    = 'https://zeonfed.org/http-bind';
+const STORE_NAME  = 'ConnectionStore';
+const CLIENT_NAME = 'XMPP Web';
 
 let ConnectionStore = Reflux.createStore({
 
@@ -54,7 +56,7 @@ let ConnectionStore = Reflux.createStore({
   onConnection () {
     clearTimeout(this.reconnectionTimeout);
 
-    this.connection.disco.addIdentity('client', 'web', 'XMPP Web');
+    this.connection.disco.addIdentity('client', 'web', CLIENT_NAME);
     this.connection.disco.addFeature(Strophe.NS.VCARD);
     this.connection.disco.addFeature(Strophe.NS.CHATSTATES);
     this.connection.disco.addFeature(Strophe.NS.BOSH);
@@ -139,7 +141,7 @@ let ConnectionStore = Reflux.createStore({
   },
 
   _persist () {
-    localStorage['ConnectionStore'] = JSON.stringify({
+    localStorage[STORE_NAME] = JSON.stringify({
       loggedIn: this.loggedIn,
       jid:      this.jid,
       password: this.password,
@@ -147,11 +149,11 @@ let ConnectionStore = Reflux.createStore({
   },
 
   _load () {
-    if (typeof localStorage['ConnectionStore'] === 'undefined') {
+    if (typeof localStorage[STORE_NAME] === 'undefined') {
       return;
     }
 
-    let json  = localStorage['ConnectionStore'];
+    let json  = localStorage[STORE_NAME];
     let state = JSON.parse(json);
 
     this.loggedIn = state.loggedIn;
