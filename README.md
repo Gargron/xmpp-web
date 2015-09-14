@@ -26,11 +26,8 @@ For generating static assets for production:
 
 ## Road map
 
-- Some form of infinite scrolling
-- Persist roster in localStorage
 - XEP-0077: Changing password
 - XEP-0045: Multi-User Chat
-- Improve UI in the event of a lost connection
 
 ## Nice to haves but probably far off
 

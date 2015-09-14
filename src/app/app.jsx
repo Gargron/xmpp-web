@@ -55,4 +55,11 @@
   window.applicationCache.onupdateready = function () {
     Actions.updateReady();
   };
+
+  // Regularly check if a newer version is available
+  setInterval(function () {
+    if (window.applicationCache === window.applicationCache.IDLE) {
+      window.applicationCache.update();
+    }
+  }, 1000 * 3600);
 })();

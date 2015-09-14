@@ -111,9 +111,9 @@ let Utils = {
     }
 
     if (status === 'Offline') {
-      if (u.get('subscription') === 'none') {
+      if (u.get('subscription') === 'none' && u.get('ask') != null) {
         status = 'Pending authorization';
-      } else if (u.get('subscription') === 'from') {
+      } else if (u.get('subscription') === 'none' || u.get('subscription') === 'from') {
         status = 'Not subscribed';
       }
     }

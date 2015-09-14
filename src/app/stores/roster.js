@@ -4,6 +4,8 @@ let Immutable = require('immutable');
 let moment    = require('moment');
 let utils     = require('../utils');
 
+const STORE_NAME = 'RosterStore';
+
 let RosterStore = Reflux.createStore({
 
   init () {
@@ -18,6 +20,7 @@ let RosterStore = Reflux.createStore({
     this.listenTo(Actions.profileUpdateReceived, this.onProfileUpdateReceived);
     this.listenTo(Actions.windowFocus, this.onWindowFocus);
     this.listenTo(Actions.windowFocusLost, this.onWindowFocusLost);
+    this.listenTo(Actions.logout, this.onLogout);
     this.getInitialState();
   },
 
@@ -37,8 +40,6 @@ let RosterStore = Reflux.createStore({
   },
 
   onRemoveFromRoster (jid) {
-    // console.log('Removing from roster: ' + jid);
-
     this.connection.roster.remove(jid);
     this.connection.roster.unsubscribe(jid);
   },
@@ -55,8 +56,6 @@ let RosterStore = Reflux.createStore({
     this.roster = this.roster.update(itemIndex, function (val) {
       return val.set('state', newState);
     });
-
-    // console.log('New state for ' + jid, newState);
 
     this.trigger(this.roster);
   },
@@ -113,6 +112,7 @@ let RosterStore = Reflux.createStore({
     });
 
     this.trigger(this.roster);
+    this._persist();
   },
 
   onOpenChat (jid) {
@@ -145,8 +145,6 @@ let RosterStore = Reflux.createStore({
     let lastSeenQueue = [];
     let $this = this;
 
-    // console.log('New items', newItems);
-
     let intermediate = Immutable.List(newItems).map(function (item, index) {
       item = Immutable.fromJS(item);
 
@@ -155,8 +153,6 @@ let RosterStore = Reflux.createStore({
       });
 
       if (typeof oldItem === 'undefined') {
-        // console.log('New item', item.toJS());
-
         item = item.merge({
           vcard: {
             nickname: '',
@@ -172,9 +168,10 @@ let RosterStore = Reflux.createStore({
         lastSeenQueue.push([item, index]);
 
         return item;
+      } else if (oldItem.get('resources').size > 0 && item.get('resources').size === 0) {
+        // Contact went offline
+        lastSeenQueue.push([item, index]);
       }
-
-      // console.log('Merging items', oldItem.toJS(), item.toJS());
 
       return oldItem.merge(item);
     });
@@ -182,45 +179,52 @@ let RosterStore = Reflux.createStore({
     this.roster = intermediate;
 
     vcardQueue.forEach(function (queueItem) {
-      let item        = queueItem[0];
-      let updateIndex = queueItem[1];
-
-      // console.log('Updating vcard for ' + item.get('jid'));
-
-      $this.connection.vcard.get(function (stanza) {
-        $this.roster = $this.roster.update(updateIndex, function (val) {
-          return val.merge(utils.parseVCard(stanza));
-        });
-
-        $this.trigger($this.roster);
-      }, item.get('jid'));
+      $this._checkVCard.apply($this, queueItem);
     });
 
     lastSeenQueue.forEach(function (queueItem) {
-      let item        = queueItem[0];
-      let updateIndex = queueItem[1];
-
-      // console.log('Fetching last activity for ' + item.get('jid'));
-
-      $this.connection.sendIQ($iq({
-        type: 'get',
-        to:   item.get('jid'),
-      }).c('query', { xmlns: Strophe.NS.LAST_ACTIVITY }).up(), function (stanza) {
-        let query = stanza.querySelector('query');
-
-        if (query != null) {
-          let seconds = query.getAttribute('seconds');
-
-          $this.roster = $this.roster.update(updateIndex, function (val) {
-            return val.set('last_seen', moment().subtract(seconds, 'seconds').format());
-          });
-        }
-
-        $this.trigger($this.roster);
-      });
+      $this._checkLastSeen.apply($this, queueItem);
     });
 
     this.trigger(this.roster);
+    this._persist();
+  },
+
+  _checkVCard (item, index) {
+    let $this = this;
+
+    this.connection.vcard.get(function (stanza) {
+      $this.roster = $this.roster.update(index, function (val) {
+        return val.merge(utils.parseVCard(stanza));
+      });
+
+      $this.trigger($this.roster);
+      $this._persist();
+    }, item.get('jid'));
+  },
+
+  _checkLastSeen (item, index) {
+    let $this = this;
+
+    let iq = $iq({
+      type: 'get',
+      to:   item.get('jid'),
+    }).c('query', { xmlns: Strophe.NS.LAST_ACTIVITY }).up();
+
+    this.connection.sendIQ(iq, function (stanza) {
+      let query = stanza.querySelector('query');
+
+      if (query != null) {
+        let seconds = query.getAttribute('seconds');
+
+        $this.roster = $this.roster.update(index, function (val) {
+          return val.set('last_seen', moment().subtract(seconds, 'seconds').format());
+        });
+      }
+
+      $this.trigger($this.roster);
+      $this._persist();
+    });
   },
 
   onProfileUpdateReceived (stanza) {
@@ -243,6 +247,7 @@ let RosterStore = Reflux.createStore({
       });
 
       $this.trigger($this.roster);
+      $this._persist();
     }, jid);
   },
 
@@ -257,6 +262,7 @@ let RosterStore = Reflux.createStore({
   getInitialState () {
     if (typeof this.roster === 'undefined') {
       this.roster = Immutable.List();
+      this._load();
     }
 
     if (typeof this.openChat === 'undefined') {
@@ -268,6 +274,28 @@ let RosterStore = Reflux.createStore({
     }
 
     return this.roster;
+  },
+
+  onLogout () {
+    localStorage.removeItem(STORE_NAME);
+  },
+
+  _load () {
+    if (typeof localStorage[STORE_NAME] === 'undefined') {
+      return;
+    }
+
+    this.roster = Immutable.fromJS(JSON.parse(localStorage[STORE_NAME]));
+  },
+
+  _persist () {
+    localStorage[STORE_NAME] = JSON.stringify(this.roster.map(function (val) {
+      // When we later load this from store, the contact might be offline
+      // So we remove all ephermal information about them
+      return val.withMutations(function (map) {
+        return map.set('resources', []).set('state', null).set('unread', 0);
+      });
+    }).toJS());
   },
 
 });
