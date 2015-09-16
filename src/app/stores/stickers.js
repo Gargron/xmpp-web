@@ -9,6 +9,25 @@ let StickersStore = Reflux.createStore({
     return Immutable.fromJS([
 
       {
+        org:  'dsp',
+        pack: 'ducks',
+
+        meta: {
+          artist: 'Miles Arquio',
+          name:   'Ducks',
+        },
+
+        items: [
+          'genki',
+          'laugh',
+          'mad',
+          'sad',
+          'scared',
+          'sleep',
+        ],
+      },
+
+      {
         org:   'walfas',
         pack:  'misc',
 
