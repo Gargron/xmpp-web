@@ -1,8 +1,8 @@
 @import 'vendor/emoji.css';
 
 body {
-  background: #555556;
-  color: #4B4B4B;
+  background: #424242;
+  color: #424242;
   font-family: "Roboto", sans-serif;
   text-rendering: optimizelegibility;
   font-feature-settings: "kern";
@@ -65,7 +65,7 @@ body {
   .messages {
     flex-grow: 1;
     border-top: 1px solid #bbb;
-    background: #ccc;
+    background: #bdbdbd;
     overflow-x: hidden;
     overflow-y: scroll;
     display: flex;
@@ -108,7 +108,7 @@ body {
 
 .conversation-view__welcome-string {
   font-size: 26px;
-  color: #777;
+  color: #757575;
   margin-top: 20px;
 }
 
@@ -300,10 +300,27 @@ body {
 
 .login-form {
   flex: 0 0 auto;
+  width: 350px;
   background: #fff;
   border-radius: 3px;
   box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.2);
   padding: 10px 24px;
+
+  .info-text {
+    position: relative;
+    width: 350px;
+    left: -24px;
+    padding: 0 24px;
+    padding-bottom: 20px;
+  }
+}
+
+.info-text {
+  cursor: default;
+  color: #444;
+  padding-bottom: 20px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
 .form-actions {
@@ -314,7 +331,7 @@ body {
   width: 280px !important;
 
   .photo-pick {
-    background: #ccc;
+    background: #bdbdbd;
     box-sizing: border-box;
     border-radius: 3px 3px 0 0;
     width: 280px;

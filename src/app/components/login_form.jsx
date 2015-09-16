@@ -52,12 +52,14 @@ let LoginForm = React.createClass({
   render () {
     return (
       <div className="login-form" onKeyUp={this.handleKeyUp}>
+        <p className="info-text">You can login to XMPP Web with an account on any XMPP server. <a href="https://xmpp.net/directory.php" target="_blank">Choose to your heart's content from the IM&nbsp;Observatory!</a></p>
+
         <div className="input-group">
-          <TextField hintText="Jabber ID" value={this.state.jid} onChange={this.handleJidChange} errorText={this.state.error} />
+          <TextField fullWidth={true} hintText="Jabber ID" value={this.state.jid} onChange={this.handleJidChange} errorText={this.state.error} />
         </div>
 
         <div className="input-group">
-          <TextField hintText="Password" type="password" value={this.state.password} onChange={this.handlePasswordChange} />
+          <TextField fullWidth={true} hintText="Password" type="password" value={this.state.password} onChange={this.handlePasswordChange} />
         </div>
 
         <div className="form-actions">
