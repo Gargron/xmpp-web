@@ -31,9 +31,10 @@ let StickerPickerPopout = React.createClass({
   render () {
     let packTabs = this.state.packs.map(function (pack, i) {
       let thumbUrl = '/images/stickers/' + pack.get('org') + '/' + pack.get('pack') + '/thumb.png';
+      let tooltip  = pack.getIn(['meta', 'name']) + " by " + pack.getIn(['meta', 'artist']);
 
       return (
-        <IconButton key={i} className="popout-tab" onClick={this.handleTabClick.bind(this, i)} tooltip={pack.getIn(['meta', 'name'])} tooltipPosition="top-center" style={{width: '35px', height: '35px'}}>
+        <IconButton key={i} className="popout-tab" onClick={this.handleTabClick.bind(this, i)} tooltip={tooltip} tooltipPosition="top-center" style={{width: '35px', height: '35px'}}>
           <img src={thumbUrl} />
         </IconButton>
       );
