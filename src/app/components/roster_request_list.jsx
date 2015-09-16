@@ -9,7 +9,10 @@ let ListDivider = mui.ListDivider;
 let RosterRequestItem = require('./roster_request_item');
 
 let RosterRequestList = React.createClass({
-  mixins: [Reflux.connect(RosterQueueStore, 'items')],
+  mixins: [
+    React.addons.PureRenderMixin,
+    Reflux.connect(RosterQueueStore, 'items'),
+  ],
 
   render () {
     if (this.state.items.size > 0) {

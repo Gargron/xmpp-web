@@ -11,7 +11,10 @@ let Colors     = mui.Styles.Colors;
 let StickerItem = require('./sticker_item');
 
 let StickerPickerPopout = React.createClass({
-  mixins: [Reflux.connect(StickersStore, 'packs')],
+  mixins: [
+    React.addons.PureRenderMixin,
+    Reflux.connect(StickersStore, 'packs'),
+  ],
 
   getInitialState () {
     return {

@@ -22,6 +22,8 @@ let StickerPicker = require('./sticker_picker');
 
 let ConversationView = React.createClass({
   mixins: [
+    React.addons.PureRenderMixin,
+
     Reflux.connectFilter(RosterStore, "partner", function (store) {
       return store.find(function (item) {
         return item.get('jid') === this.props.jid;

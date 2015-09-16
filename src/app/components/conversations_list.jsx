@@ -20,6 +20,7 @@ let PasswordDialog      = require('./password_dialog');
 
 let ConversationsList = React.createClass({
   mixins: [
+    React.addons.PureRenderMixin,
     Reflux.listenTo(Actions.connectionLost, 'onConnectionLost'),
     Reflux.listenTo(Actions.connection, 'onConnection'),
     Reflux.listenTo(Actions.updateReady, 'onUpdateReady'),

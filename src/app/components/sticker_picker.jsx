@@ -11,6 +11,7 @@ let StickerPickerPopout = require('./sticker_picker_popout');
 
 let StickerPicker = React.createClass({
   mixins: [
+    React.addons.PureRenderMixin,
     mui.Mixins.ClickAwayable,
     Reflux.listenTo(Actions.sendMessage, 'onSendMessage'),
   ],

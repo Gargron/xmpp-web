@@ -10,6 +10,8 @@ let Colors   = mui.Styles.Colors;
 let FontIcon = mui.FontIcon;
 
 let Message = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
+
   render () {
     let message = this.props.message;
     let classes = ["message"];

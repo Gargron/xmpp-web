@@ -10,6 +10,7 @@ let Toggle = mui.Toggle;
 
 let NotificationsDialog = React.createClass({
   mixins: [
+    React.addons.PureRenderMixin,
     Reflux.connect(NotificationsStore, 'notifications'),
     Reflux.listenTo(Actions.openNotificationsDialog, 'onOpenNotificationsDialog'),
   ],

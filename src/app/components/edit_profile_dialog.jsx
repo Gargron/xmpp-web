@@ -12,6 +12,8 @@ let Avatar     = mui.Avatar;
 let Dialog     = mui.Dialog;
 let TextField  = mui.TextField;
 
+let AvatarPicker = require('./avatar_picker');
+
 let resizeImage = function (img, type) {
   const DIM  = 96;
   let canvas = document.createElement('canvas');
@@ -30,6 +32,7 @@ let resizeImage = function (img, type) {
 
 let EditProfileDialog = React.createClass({
   mixins: [
+    React.addons.PureRenderMixin,
     Reflux.connect(AccountStore, 'account'),
     Reflux.listenTo(Actions.openEditProfileDialog, 'onOpenEditProfileDialog'),
   ],
@@ -106,25 +109,15 @@ let EditProfileDialog = React.createClass({
   },
 
   render () {
-    let photo = this.state.photo;
-
     let dialogActions = [
       { text: 'Cancel' },
       { text: 'Submit', ref: 'submit', onTouchTap: this.handleSubmit },
     ];
 
-    let photoEdit;
-
-    if (photo === '') {
-      photoEdit = <Avatar className='photo-pick__preview' size={96} onClick={this.handlePhotoClick} />;
-    } else {
-      photoEdit = <Avatar className='photo-pick__preview' src={photo} size={96} onClick={this.handlePhotoClick} />;
-    }
-
     return (
       <Dialog ref="dialog" actions={dialogActions} actionFocus="submit" contentClassName="edit-profile-dialog">
         <div className="photo-pick">
-          {photoEdit}
+          <AvatarPicker photo={this.state.photo} size={96} onClick={this.handlePhotoClick} />
           <input type="file" ref="photoFile" onChange={this.handlePhotoPick} />
         </div>
 

@@ -9,7 +9,10 @@ let DocumentTitle = require('react-document-title');
 let RosterItem    = require('./roster_item');
 
 let RosterList = React.createClass({
-  mixins: [Reflux.connect(RosterStore, 'items')],
+  mixins: [
+    React.addons.PureRenderMixin,
+    Reflux.connect(RosterStore, 'items'),
+  ],
 
   render () {
     let unread = 0;
@@ -18,6 +21,7 @@ let RosterList = React.createClass({
       // 1. Sort by last_activity
       // 2. Sort by who was last_seen online
       // 3. Sort by who's online
+      // FIXME: This sorting is confusing
 
       let a_last   = a.get('last_activity', a.get('last_seen', null));
       let b_last   = b.get('last_activity', b.get('last_seen', null));

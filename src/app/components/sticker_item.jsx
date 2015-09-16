@@ -2,6 +2,7 @@ let React   = require('react');
 let Actions = require('../actions');
 
 let StickerItem = React.createClass({
+  mixins: [React.addons.PureRenderMixin],
 
   handleClick (e) {
     Actions.sendMessage(this.props.jid, this.props.sticker, 'sticker');

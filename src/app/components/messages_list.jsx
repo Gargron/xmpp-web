@@ -11,7 +11,10 @@ let Message = require('./message');
 let Sticker = require('./sticker');
 
 let MessagesList = React.createClass({
-  mixins: [Reflux.listenTo(ConversationsStore, "onConversationsStore")],
+  mixins: [
+    React.addons.PureRenderMixin,
+    Reflux.listenTo(ConversationsStore, "onConversationsStore"),
+  ],
 
   onConversationsStore (store) {
     this.setState({
