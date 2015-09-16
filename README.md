@@ -26,6 +26,9 @@ For generating static assets for production:
 
 ## Road map
 
+- Track recently used stickers
+- Manage sticker inventory subscriptions/trust, send along inventory URL
+- Stickers "shop" dialog for managing inventories, choosing popout selection
 - XEP-0077: Changing password
 - XEP-0045: Multi-User Chat
 
