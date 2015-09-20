@@ -17,7 +17,7 @@ let AvatarPicker = React.createClass({
 
     return (
       <div className={classes.join(' ')} style={{ width: size + 'px', height: size + 'px', borderRadius: size + 'px' }} onClick={this.props.onClick}>
-        <div className="photo-pick__preview__overlay"><FontIcon className="material-icons" color={Colors.white}>file_upload</FontIcon></div>
+        <div className="photo-pick__preview__overlay" style={{ borderRadius: size + 'px' }}><FontIcon className="material-icons" color={Colors.white}>file_upload</FontIcon></div>
         <Avatar src={this.props.photo} size={size} />
       </div>
     );

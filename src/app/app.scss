@@ -331,7 +331,7 @@ body {
   width: 280px !important;
 
   .photo-pick {
-    background: #bdbdbd;
+    background: #009688;
     box-sizing: border-box;
     border-radius: 3px 3px 0 0;
     width: 280px;
@@ -352,6 +352,7 @@ body {
     cursor: pointer;
     overflow: hidden;
     position: relative;
+    background: url('/images/transparency.png');
 
     &:hover, &.is-empty {
       .photo-pick__preview__overlay {
