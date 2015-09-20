@@ -29,6 +29,7 @@ let Actions = Reflux.createActions([
 
   'openChat',
   'closeChat',
+  'clearChat',
 
   'messageReceived',
   'messageMarked',

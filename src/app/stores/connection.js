@@ -170,8 +170,8 @@ let ConnectionStore = Reflux.createStore({
     });
 
     // Handle incoming messages
-    this.connection.addHandler(function (message) {
-      Actions.messageReceived(message);
+    this.connection.addHandler(function (stanza) {
+      Actions.messageReceived(stanza);
       return true;
     }, null, 'message', null);
 

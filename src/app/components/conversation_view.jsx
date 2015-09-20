@@ -43,6 +43,8 @@ let ConversationView = React.createClass({
     if (data.payload === 'remove') {
       Actions.removeFromRoster(this.props.jid);
       Actions.closeChat();
+    } else if (data.payload === 'clear') {
+      Actions.clearChat(this.props.jid);
     }
   },
 
@@ -75,6 +77,7 @@ let ConversationView = React.createClass({
       }
 
       let menu = [
+        { payload: 'clear', text: 'Clear log' },
         { payload: 'remove', text: 'Remove' },
       ];
 
@@ -86,10 +89,6 @@ let ConversationView = React.createClass({
             </ToolbarGroup>
 
             <ToolbarGroup key={2} float="right">
-              <IconButton tooltip="No end-to-end encryption" style={{lineHeight: '56px', paddingLeft: '24px'}}>
-                <FontIcon className="material-icons">lock_open</FontIcon>
-              </IconButton>
-
               <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} style={{float: 'none'}}>
                 <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>more_vert</FontIcon>
               </DropDownIcon>

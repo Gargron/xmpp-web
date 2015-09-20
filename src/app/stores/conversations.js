@@ -23,6 +23,7 @@ let ConversationsStore = Reflux.createStore({
     this.listenTo(Actions.logout, this.onLogout);
     this.listenTo(Actions.markMessage, this.onMarkMessage);
     this.listenTo(Actions.confirmMessageDelivery, this.onConfirmMessageDelivery);
+    this.listenTo(Actions.clearChat, this.onClearChat);
     this.getInitialState();
   },
 
@@ -217,6 +218,15 @@ let ConversationsStore = Reflux.createStore({
         type:   type,
         status: 'sending',
       }));
+    });
+
+    this.trigger(this.messages);
+    this._persist();
+  },
+
+  onClearChat (jid) {
+    this.messages = this.messages.update(jid, Immutable.List(), function (val) {
+      return val.clear();
     });
 
     this.trigger(this.messages);
