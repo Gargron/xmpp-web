@@ -8,6 +8,7 @@ let AccountStore = Reflux.createStore({
   init () {
     this.listenTo(Actions.connection, this.onConnection);
     this.listenTo(Actions.updateProfile, this.onUpdateProfile);
+    this.listenTo(Actions.updateStatus, this.onUpdateStatus);
     this.listenTo(Actions.rosterReady, this.onRosterReady);
     this.listenTo(Actions.leave, this.onLeave);
     this.listenTo(Actions.ackSubscribe, this.onAckSubscribe);
@@ -60,8 +61,15 @@ let AccountStore = Reflux.createStore({
     });
   },
 
+  onUpdateStatus (status) {
+    this.account = this.account.set('status', status);
+    this.trigger(this.account);
+
+    this._announcePresence();
+  },
+
   onRosterReady () {
-    this.connection.send(this._buildPresence($pres()));
+    this._announcePresence();
   },
 
   onLeave () {
@@ -104,6 +112,10 @@ let AccountStore = Reflux.createStore({
     }
 
     this.connection.send(stanza);
+  },
+
+  _announcePresence () {
+    this.connection.send(this._buildPresence($pres()));
   },
 
   _buildPresence (root) {

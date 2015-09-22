@@ -85,8 +85,8 @@ body {
   }
 
   &.is-empty {
-    background: #e0e0e0;
-    border-radius: 6px 0 0 6px;
+    background: #bdbdbd;
+    border-radius: 4px 0 0 4px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -108,8 +108,9 @@ body {
 
 .conversation-view__welcome-string {
   font-size: 26px;
-  color: #757575;
-  margin-top: 20px;
+  color: #424242;
+  margin-top: 40px;
+  margin-bottom: 0;
 }
 
 .conversations-list {
@@ -552,12 +553,4 @@ body {
   background: rgba(255, 255, 255, 0.5);
   z-index: 100;
   border-radius: 0 0 6px 0;
-}
-
-.dropdown-menu {
-  div[tabindex="0"] {
-    position: relative;
-    width: 200px !important;
-    z-index: 99 !important;
-  }
 }

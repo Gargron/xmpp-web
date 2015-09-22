@@ -13,7 +13,9 @@ let FontIcon     = mui.FontIcon;
 let CardHeader   = mui.CardHeader;
 let Paper        = mui.Paper;
 let IconButton   = mui.IconButton;
-let DropDownIcon = mui.DropDownIcon;
+let IconMenu     = mui.IconMenu;
+let MenuItem     = require('material-ui/lib/menus/menu-item');
+let MenuDivider  = require('material-ui/lib/menus/menu-divider');
 let Colors       = mui.Styles.Colors;
 
 let MessageForm   = require('./message_form');
@@ -39,11 +41,13 @@ let ConversationView = React.createClass({
     });
   },
 
-  handleMenuClick (e, key, data) {
-    if (data.payload === 'remove') {
+  handleMenuClick (e, item) {
+    let value = item._store.props.value;
+
+    if (value === 'remove') {
       Actions.removeFromRoster(this.props.jid);
       Actions.closeChat();
-    } else if (data.payload === 'clear') {
+    } else if (value === 'clear') {
       Actions.clearChat(this.props.jid);
     }
   },
@@ -51,11 +55,9 @@ let ConversationView = React.createClass({
   render () {
     let contents = (
       <div className="conversation-view is-empty">
-        <Paper zDepth={0} circle={true}>
-          <img src="/images/welcome.png" className="conversation-view__welcome" />
-        </Paper>
-
-        <h3 className="conversation-view__welcome-string">Welcome back!</h3>
+        <img src="/images/welcome.png" className="conversation-view__welcome" />
+        <h3 className="conversation-view__welcome-string">XMPP Web</h3>
+        <p>This project is open-source and available on <a href="https://github.com/Gargron/xmpp-web" target="_blank">GitHub</a>.</p>
       </div>
     );
 
@@ -76,11 +78,6 @@ let ConversationView = React.createClass({
         subtitle = <span>Composing...</span>;
       }
 
-      let menu = [
-        { payload: 'clear', text: 'Clear log' },
-        { payload: 'remove', text: 'Remove' },
-      ];
-
       contents = (
         <div className="conversation-view">
           <Toolbar className="header">
@@ -89,9 +86,10 @@ let ConversationView = React.createClass({
             </ToolbarGroup>
 
             <ToolbarGroup key={2} float="right">
-              <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} style={{float: 'none'}}>
-                <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>more_vert</FontIcon>
-              </DropDownIcon>
+              <IconMenu onItemTouchTap={this.handleMenuClick} iconButtonElement={<IconButton style={{lineHeight: '56px', paddingLeft: '24px'}}><FontIcon className="material-icons">more_vert</FontIcon></IconButton>}>
+                <MenuItem value="clear" primaryText="Clear log" />
+                <MenuItem value="remove" primaryText="Remove" />
+              </IconMenu>
             </ToolbarGroup>
           </Toolbar>
 

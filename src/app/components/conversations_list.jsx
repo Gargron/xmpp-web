@@ -7,7 +7,9 @@ let Toolbar      = mui.Toolbar;
 let ToolbarGroup = mui.ToolbarGroup;
 let ToolbarTitle = mui.ToolbarTitle;
 let FontIcon     = mui.FontIcon;
-let DropDownIcon = mui.DropDownIcon;
+let IconMenu     = mui.IconMenu;
+let MenuItem     = require('material-ui/lib/menus/menu-item');
+let MenuDivider  = require('material-ui/lib/menus/menu-divider');
 let IconButton   = mui.IconButton;
 let Colors       = mui.Styles.Colors;
 
@@ -51,26 +53,21 @@ let ConversationsList = React.createClass({
     });
   },
 
-  handleMenuClick (e, key, item) {
-    if (item.payload === 'logout') {
+  handleMenuClick (e, item) {
+    let value = item._store.props.value;
+
+    if (value === 'logout') {
       Actions.logout();
-    } else if (item.payload === 'profile') {
+    } else if (value === 'profile') {
       Actions.openEditProfileDialog();
-    } else if (item.payload === 'notifications') {
+    } else if (value === 'notifications') {
       Actions.openNotificationsDialog();
-    } else if (item.payload === 'password') {
+    } else if (value === 'password') {
       Actions.openPasswordDialog();
     }
   },
 
   render () {
-    let menu = [
-      { payload: 'profile', text: 'Profile' },
-      { payload: 'notifications', text: 'Notifications' },
-      { payload: 'password', text: 'Change password' },
-      { payload: 'logout', text: 'Logout' },
-    ];
-
     let warnings = '';
 
     if (!this.state.online) {
@@ -109,9 +106,12 @@ let ConversationsList = React.createClass({
           </ToolbarGroup>
 
           <ToolbarGroup key={1} float="right">
-            <DropDownIcon menuItems={menu} onChange={this.handleMenuClick} className="dropdown-menu">
-              <FontIcon className="material-icons" style={{lineHeight: '56px', paddingLeft: '24px'}}>menu</FontIcon>
-            </DropDownIcon>
+            <IconMenu onItemTouchTap={this.handleMenuClick} iconButtonElement={<IconButton style={{lineHeight: '56px', paddingLeft: '24px'}}><FontIcon className="material-icons">menu</FontIcon></IconButton>}>
+              <MenuItem value="profile" primaryText="Profile &amp; Status" />
+              <MenuItem value="notifications" primaryText="Notifications" />
+              <MenuDivider />
+              <MenuItem value="logout" primaryText="Logout" />
+            </IconMenu>
           </ToolbarGroup>
         </Toolbar>
 

@@ -41,6 +41,7 @@ let Actions = Reflux.createActions([
 
   'openEditProfileDialog',
   'updateProfile',
+  'updateStatus',
   'profileUpdateReceived',
 
   'openNotificationsDialog',

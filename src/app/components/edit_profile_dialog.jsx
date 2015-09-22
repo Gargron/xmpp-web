@@ -41,6 +41,7 @@ let EditProfileDialog = React.createClass({
     this.setState({
       nickname: this.state.account.get('nickname'),
       photo:    this.state.account.get('photo'),
+      status:   this.state.account.get('status'),
     });
 
     this.refs.dialog.show();
@@ -49,6 +50,12 @@ let EditProfileDialog = React.createClass({
   handleNicknameChange (e) {
     this.setState({
       nickname: e.target.value,
+    });
+  },
+
+  handleStatusChange (e) {
+    this.setState({
+      status: e.target.value,
     });
   },
 
@@ -104,7 +111,14 @@ let EditProfileDialog = React.createClass({
   },
 
   handleSubmit () {
-    Actions.updateProfile(this.state.nickname, this.state.photo);
+    if (this.state.nickname !== this.state.account.get('nickname') || this.state.photo !== this.state.account.get('photo')) {
+      Actions.updateProfile(this.state.nickname, this.state.photo);
+    }
+
+    if (this.state.status !== this.state.account.get('status')) {
+      Actions.updateStatus(this.state.status);
+    }
+
     this.refs.dialog.dismiss();
   },
 
@@ -122,6 +136,7 @@ let EditProfileDialog = React.createClass({
         </div>
 
         <TextField hintText="Nickname" value={this.state.nickname} onChange={this.handleNicknameChange} fullWidth={true} />
+        <TextField hintText="Status" value={this.state.status} onChange={this.handleStatusChange} fullWidth={true} />
       </Dialog>
     );
   },

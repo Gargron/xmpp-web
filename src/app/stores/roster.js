@@ -41,7 +41,6 @@ let RosterStore = Reflux.createStore({
 
   onRemoveFromRoster (jid) {
     this.connection.roster.remove(jid);
-    this.connection.roster.unsubscribe(jid);
   },
 
   onRosterStateChange (jid, newState) {
@@ -173,6 +172,12 @@ let RosterStore = Reflux.createStore({
         lastSeenQueue.push([item, index]);
       }
 
+      // If we just loaded old data, re-check vCards too
+      if (oldItem.get('_cold', false) === true) {
+        oldItem = oldItem.set('_cold', false);
+        vcardQueue.push([oldItem, index]);
+      }
+
       return oldItem.merge(item);
     });
 
@@ -293,7 +298,7 @@ let RosterStore = Reflux.createStore({
       // When we later load this from store, the contact might be offline
       // So we remove all ephermal information about them
       return val.withMutations(function (map) {
-        return map.set('resources', []).set('state', null).set('unread', 0);
+        return map.set('resources', []).set('state', null).set('unread', 0).set('_cold', true);
       });
     }).toJS());
   },

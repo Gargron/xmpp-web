@@ -5,29 +5,30 @@ let Actions = require('../actions');
 let ListItem     = mui.ListItem;
 let Colors       = mui.Styles.Colors;
 let FontIcon     = mui.FontIcon;
-let DropDownIcon = mui.DropDownIcon;
+let IconMenu     = mui.IconMenu;
+let IconButton   = mui.IconButton;
+let MenuItem     = require('material-ui/lib/menus/menu-item');
+let MenuDivider  = require('material-ui/lib/menus/menu-divider');
 
 let RosterRequestItem = React.createClass({
   mixins: [React.addons.PureRenderMixin],
 
-  handleMenuClick (e, key, data) {
-    if (data.payload === 'authorize') {
+  handleMenuClick (e, item) {
+    let value = item._store.props.value;
+
+    if (value === 'authorize') {
       Actions.authorize(this.props.jid);
-    } else if (data.payload === 'reject') {
+    } else if (value === 'reject') {
       Actions.reject(this.props.jid);
     }
   },
 
   render () {
-    let menu = [
-      { payload: 'authorize', text: 'Authorize' },
-      { payload: 'reject', text: 'Reject' },
-    ];
-
     let dropdownMenu = (
-      <DropDownIcon menuItems={menu} onChange={this.handleMenuClick}>
-        <FontIcon className="material-icons" style={{padding: '12px'}}>more_vert</FontIcon>
-      </DropDownIcon>
+      <IconMenu onItemTouchTap={this.handleMenuClick} iconButtonElement={<IconButton style={{padding: '12px'}}><FontIcon className="material-icons">more_vert</FontIcon></IconButton>}>
+        <MenuItem value="authorize" primaryText="Authorize" />
+        <MenuItem value="reject" primaryText="Reject" />
+      </IconMenu>
     );
 
     return (
