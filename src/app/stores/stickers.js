@@ -28,6 +28,25 @@ let StickersStore = Reflux.createStore({
       },
 
       {
+        org:  'berii',
+        pack: 'buff_bunnie',
+
+        meta: {
+          artist: 'Berii',
+          name:   'Buff Bunnie',
+        },
+
+        items: [
+          'tear',
+          'sad',
+          'shock',
+          'love',
+          'nosebleed',
+          'yes',
+        ],
+      },
+
+      {
         org:   'walfas',
         pack:  'misc',
 
