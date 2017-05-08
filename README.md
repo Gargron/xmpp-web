@@ -1,5 +1,7 @@
 # XMPP Web
 
+[![Join the chat at https://gitter.im/Gargron/xmpp-web](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Gargron/xmpp-web?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 [![Flattr this!](https://button.flattr.com/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=Gargron&url=https%3A%2F%2Fgithub.com%2FGargron%2Fxmpp-web)
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Gargron/xmpp-web?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
